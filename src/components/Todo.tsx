@@ -2,27 +2,25 @@ import { useEffect, useState } from 'react'
 
 type Item = { id: string; text: string; done: boolean }
 
-const seed: Item[] = [
-  { id: '1', text: 'Print CAS reflection before advisory', done: false },
-  { id: '2', text: 'Refill water · Maple Leaf Café after P3', done: false },
-  { id: '3', text: 'Charge iPad — bio lab needs the probe', done: true },
-]
-
 export default function Todo() {
   const [items, setItems] = useState<Item[]>(() => {
-    const raw = localStorage.getItem('cis-todo')
-    return raw ? JSON.parse(raw) : seed
+    const raw = localStorage.getItem('cis-todo-v2')
+    return raw ? JSON.parse(raw) : []
   })
   const [text, setText] = useState('')
+  const [editing, setEditing] = useState<string | null>(null)
+  const [draft, setDraft] = useState('')
 
   useEffect(() => {
-    localStorage.setItem('cis-todo', JSON.stringify(items))
+    localStorage.removeItem('cis-todo')
+    localStorage.setItem('cis-todo-v2', JSON.stringify(items))
   }, [items])
 
   return (
     <div>
+      {items.length === 0 && <p className="meta">No tasks yet.</p>}
       {items.map((item) => (
-        <label key={item.id} className={`todo-row ${item.done ? 'done' : ''}`}>
+        <div key={item.id} className={`todo-row ${item.done ? 'done' : ''}`}>
           <input
             type="checkbox"
             checked={item.done}
@@ -31,9 +29,68 @@ export default function Todo() {
                 xs.map((x) => (x.id === item.id ? { ...x, done: !x.done } : x)),
               )
             }
+            aria-label={item.text}
           />
-          <span>{item.text}</span>
-        </label>
+          {editing === item.id ? (
+            <input
+              className="note-box"
+              value={draft}
+              autoFocus
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const next = draft.trim()
+                  if (next) {
+                    setItems((xs) =>
+                      xs.map((x) => (x.id === item.id ? { ...x, text: next } : x)),
+                    )
+                  }
+                  setEditing(null)
+                }
+                if (e.key === 'Escape') setEditing(null)
+              }}
+            />
+          ) : (
+            <span>{item.text}</span>
+          )}
+          <div className="todo-actions">
+            {editing === item.id ? (
+              <button
+                className="btn"
+                type="button"
+                onClick={() => {
+                  const next = draft.trim()
+                  if (next) {
+                    setItems((xs) =>
+                      xs.map((x) => (x.id === item.id ? { ...x, text: next } : x)),
+                    )
+                  }
+                  setEditing(null)
+                }}
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                className="btn ghost"
+                type="button"
+                onClick={() => {
+                  setEditing(item.id)
+                  setDraft(item.text)
+                }}
+              >
+                Edit
+              </button>
+            )}
+            <button
+              className="btn ghost"
+              type="button"
+              onClick={() => setItems((xs) => xs.filter((x) => x.id !== item.id))}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
       ))}
       <form
         className="todo-add"
@@ -50,7 +107,7 @@ export default function Todo() {
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Add a tiny mission…"
+          placeholder="Add a task…"
         />
         <button className="btn" type="submit">
           Add

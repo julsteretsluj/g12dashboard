@@ -335,6 +335,22 @@ textarea {
   font-size: 14px;
 }
 
+.todo-row span {
+  flex: 1;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.todo-actions .btn {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
 .todo-row:last-of-type {
   border-bottom: 0;
 }
@@ -354,6 +370,7 @@ textarea {
   display: flex;
   gap: 8px;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .todo-add input,
@@ -550,6 +567,44 @@ table.tt th {
   font-size: 13px;
 }
 
+.doc-card {
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+.doc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.doc-row a {
+  color: var(--red);
+}
+
+.file-add {
+  display: inline-flex;
+  margin-top: 10px;
+  border-radius: 980px;
+  border: 1px solid var(--line);
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.file-add input {
+  display: none;
+}
+
+.todo-row.done span,
+.todo-row .done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
 .due {
   font-size: 11px;
   color: var(--red);
@@ -560,11 +615,59 @@ table.tt th {
   border: 0;
   width: 100%;
   border-radius: 12px;
-  min-height: 152px;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  min-height: 280px;
 }
 
-.embed.tall {
-  min-height: 280px;
+.embed.audio {
+  aspect-ratio: auto;
+  min-height: 352px;
+  height: 352px;
+}
+
+.embed-frame {
+  position: relative;
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: var(--shadow);
+}
+
+.embed-frame iframe,
+.embed-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: contain;
+  background: #0e0e10;
+}
+
+.embed-frame.video {
+  aspect-ratio: 16 / 9;
+  min-height: 360px;
+}
+
+.embed-frame.doc,
+.embed-frame.wide {
+  height: min(78vh, 860px);
+  min-height: 560px;
+  background: #f2f2f7;
+}
+
+.embed-frame.doc iframe,
+.embed-frame.wide iframe {
+  background: #fff;
+}
+
+.embed-frame.image {
+  aspect-ratio: 16 / 10;
+  min-height: 420px;
+  background: #1d1d1f;
 }
 
 .weather {

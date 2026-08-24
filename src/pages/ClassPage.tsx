@@ -1,16 +1,35 @@
 import { Link, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
+import DocShelf from '../components/DocShelf'
+import {
+  loadWorkspace,
+  newId,
+  saveWorkspace,
+  type TaskItem,
+  type Workspace,
+} from '../lib/workspace'
 
 export default function ClassPage() {
   const { id } = useParams()
   const course = classes.find((c) => c.id === id)
-  const storageKey = `cis-notes-${id}`
-  const [scratch, setScratch] = useState('')
+  const [ws, setWs] = useState<Workspace>({ notes: [], library: [], tasks: [] })
+  const [taskTitle, setTaskTitle] = useState('')
+  const [taskDue, setTaskDue] = useState('')
+  const [noteTitle, setNoteTitle] = useState('')
+  const [noteBody, setNoteBody] = useState('')
 
   useEffect(() => {
-    setScratch(localStorage.getItem(storageKey) ?? '')
-  }, [storageKey])
+    if (!id) return
+    localStorage.removeItem(`cis-notes-${id}`)
+    setWs(loadWorkspace(id))
+  }, [id])
+
+  function update(next: Workspace) {
+    if (!id) return
+    setWs(next)
+    saveWorkspace(id, next)
+  }
 
   if (!course) {
     return (
@@ -18,6 +37,30 @@ export default function ClassPage() {
         No class here. <Link to="/">Home</Link>
       </p>
     )
+  }
+
+  function addTask(e: FormEvent) {
+    e.preventDefault()
+    if (!taskTitle.trim()) return
+    const task: TaskItem = {
+      id: newId(),
+      title: taskTitle.trim(),
+      due: taskDue.trim(),
+      note: '',
+      done: false,
+      attachments: [],
+      submissions: [],
+    }
+    update({ ...ws, tasks: [...ws.tasks, task] })
+    setTaskTitle('')
+    setTaskDue('')
+  }
+
+  function patchTask(taskId: string, patch: Partial<TaskItem>) {
+    update({
+      ...ws,
+      tasks: ws.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
+    })
   }
 
   return (
@@ -35,91 +78,149 @@ export default function ClassPage() {
         </Link>
       </header>
 
+      <section className="card" style={{ marginBottom: 16 }}>
+        <h3>Tasks</h3>
+        <p className="meta" style={{ marginBottom: 12 }}>
+          Attach briefings and links on the task. Drop finished work under submissions.
+        </p>
+        {ws.tasks.length === 0 && <p className="meta">No tasks yet — add one below.</p>}
+        {ws.tasks.map((task) => (
+          <article key={task.id} className="assignment">
+            <div className="todo-add" style={{ marginBottom: 8 }}>
+              <input
+                type="checkbox"
+                checked={task.done}
+                onChange={() => patchTask(task.id, { done: !task.done })}
+                aria-label={task.title}
+              />
+              <input
+                className="note-box"
+                value={task.title}
+                onChange={(e) => patchTask(task.id, { title: e.target.value })}
+                placeholder="Task title"
+              />
+              <input
+                className="note-box"
+                value={task.due}
+                onChange={(e) => patchTask(task.id, { due: e.target.value })}
+                placeholder="Due"
+                style={{ maxWidth: 120 }}
+              />
+            </div>
+            <textarea
+              className="note-box"
+              rows={2}
+              placeholder="What this task is…"
+              value={task.note}
+              onChange={(e) => patchTask(task.id, { note: e.target.value })}
+            />
+            <h4 style={{ marginTop: 12 }}>Task documents & embeds</h4>
+            <DocShelf
+              items={task.attachments}
+              onChange={(attachments) => patchTask(task.id, { attachments })}
+              addLabel="Task"
+            />
+            <h4 style={{ marginTop: 14 }}>Submissions</h4>
+            <DocShelf
+              items={task.submissions}
+              onChange={(submissions) => patchTask(task.id, { submissions })}
+              addLabel="Submission"
+            />
+            <button
+              className="btn ghost"
+              type="button"
+              style={{ marginTop: 10 }}
+              onClick={() => update({ ...ws, tasks: ws.tasks.filter((t) => t.id !== task.id) })}
+            >
+              Delete task
+            </button>
+          </article>
+        ))}
+        <form className="todo-add" onSubmit={addTask} style={{ marginTop: 12 }}>
+          <input
+            value={taskTitle}
+            onChange={(e) => setTaskTitle(e.target.value)}
+            placeholder="New task"
+          />
+          <input
+            value={taskDue}
+            onChange={(e) => setTaskDue(e.target.value)}
+            placeholder="Due (e.g. Fri)"
+            style={{ maxWidth: 140 }}
+          />
+          <button className="btn" type="submit">
+            Add task
+          </button>
+        </form>
+      </section>
+
       <div className="two">
         <section className="card">
-          <h3>Assignments</h3>
-          {course.assignments.map((a) => (
-            <article key={a.title} className="assignment">
-              <div className="due">{a.done ? 'Settled' : `Due ${a.due}`}</div>
-              <h4>{a.title}</h4>
-              <p>{a.note}</p>
-            </article>
-          ))}
+          <h3>Class library</h3>
+          <p className="meta" style={{ marginBottom: 10 }}>
+            Handouts, slides, Drive folders, videos — stored on this device for {course.short}.
+          </p>
+          <DocShelf
+            items={ws.library}
+            onChange={(library) => update({ ...ws, library })}
+            addLabel="Library"
+          />
         </section>
         <section className="card">
           <h3>Notes</h3>
+          {ws.notes.length === 0 && <p className="meta">Notes are empty.</p>}
           <div className="notes-grid">
-            {course.notes.map((n) => (
-              <div className="sticky" key={n.title}>
+            {ws.notes.map((n) => (
+              <div className="sticky" key={n.id}>
                 <h4>{n.title}</h4>
                 <p>{n.body}</p>
+                <button
+                  className="btn ghost"
+                  type="button"
+                  style={{ marginTop: 8 }}
+                  onClick={() => update({ ...ws, notes: ws.notes.filter((x) => x.id !== n.id) })}
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
-          <h3 style={{ marginTop: 18 }}>Scratch pad</h3>
-          <textarea
-            className="note-box"
-            rows={6}
-            value={scratch}
-            onChange={(e) => {
-              setScratch(e.target.value)
-              localStorage.setItem(storageKey, e.target.value)
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (!noteTitle.trim() && !noteBody.trim()) return
+              update({
+                ...ws,
+                notes: [
+                  ...ws.notes,
+                  { id: newId(), title: noteTitle.trim() || 'Note', body: noteBody.trim() },
+                ],
+              })
+              setNoteTitle('')
+              setNoteBody('')
             }}
-            placeholder="Dump the thought before the bell…"
-          />
+            style={{ marginTop: 12 }}
+          >
+            <input
+              className="note-box"
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
+              placeholder="Note title"
+              style={{ width: '100%', marginBottom: 8 }}
+            />
+            <textarea
+              className="note-box"
+              rows={4}
+              value={noteBody}
+              onChange={(e) => setNoteBody(e.target.value)}
+              placeholder="Write a new note…"
+            />
+            <button className="btn" type="submit" style={{ marginTop: 8 }}>
+              Add note
+            </button>
+          </form>
         </section>
       </div>
-
-      <section className="card" style={{ marginTop: 16 }}>
-        <h3>Resources & little portals</h3>
-        <div className="tz">
-          {course.resources.map((r) => (
-            <a key={r.href} className="pill" href={r.href} target="_blank" rel="noreferrer">
-              {r.label}
-            </a>
-          ))}
-        </div>
-        {course.id === 'math' && (
-          <iframe
-            className="embed tall"
-            style={{ marginTop: 14, minHeight: 360 }}
-            title="Desmos"
-            src="https://www.desmos.com/calculator"
-          />
-        )}
-        {course.id === 'bio' && (
-          <iframe
-            className="embed tall"
-            style={{ marginTop: 14 }}
-            title="Cells"
-            src="https://en.wikipedia.org/wiki/Cell_(biology)"
-          />
-        )}
-        {course.id === 'social' && (
-          <iframe
-            className="embed tall"
-            style={{ marginTop: 14 }}
-            title="Liberalism"
-            src="https://en.wikipedia.org/wiki/Liberalism"
-          />
-        )}
-        {course.id === 'cts' && (
-          <iframe
-            className="embed tall"
-            style={{ marginTop: 14, minHeight: 360 }}
-            title="Tinkercad"
-            src="https://www.tinkercad.com/"
-          />
-        )}
-        {course.id === 'art' && (
-          <iframe
-            className="embed tall"
-            style={{ marginTop: 14 }}
-            title="Met collection"
-            src="https://www.metmuseum.org/art/collection"
-          />
-        )}
-      </section>
     </>
   )
 }

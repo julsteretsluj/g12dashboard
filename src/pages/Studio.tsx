@@ -30,7 +30,6 @@ export default function Studio() {
           <h3>Campus-adjacent rain</h3>
           <iframe
             className="embed"
-            style={{ minHeight: 220 }}
             title="Rain sounds"
             src="https://www.youtube.com/embed/q76bMs-NwRk"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -41,19 +40,9 @@ export default function Studio() {
         <section className="card">
           <h3>Pocket planetarium</h3>
           <iframe
-            className="embed"
-            style={{ minHeight: 220 }}
+            className="embed tall"
             title="Stellarium"
             src="https://stellarium-web.org/"
-          />
-        </section>
-
-        <section className="card">
-          <h3>Wikipedia hole: Phnom Penh</h3>
-          <iframe
-            className="embed tall"
-            title="Phnom Penh"
-            src="https://en.wikipedia.org/wiki/Phnom_Penh"
           />
         </section>
 
