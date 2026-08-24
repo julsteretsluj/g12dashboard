@@ -44,7 +44,7 @@ export default function App() {
           {classes.map((c) => (
             <NavLink key={c.id} to={`/class/${c.id}`}>
               <span>{c.emoji}</span>
-              {c.name.split(':')[0]}
+              {c.short}
             </NavLink>
           ))}
         </nav>

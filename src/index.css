@@ -480,6 +480,12 @@ table.tt th {
   min-height: 44px;
 }
 
+.cell.lunch {
+  background: #fff8e8;
+  color: #1d1d1f;
+  border: 1px dashed rgba(192, 41, 45, 0.35);
+}
+
 .class-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

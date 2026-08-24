@@ -1,13 +1,7 @@
-export type Period = {
-  start: string
-  end: string
-  classId: string | null
-  label?: string
-}
-
 export type ClassInfo = {
   id: string
   name: string
+  short: string
   teacher: string
   room: string
   color: string
@@ -20,179 +14,143 @@ export type ClassInfo = {
 
 export const classes: ClassInfo[] = [
   {
-    id: 'english',
-    name: 'English A: Literature',
-    teacher: 'Ms. Harlow',
-    room: 'H-214',
-    color: '#C0292D',
-    emoji: '📖',
-    blurb: 'Close reading, drama, and the quiet art of saying what you mean.',
-    assignments: [
-      { title: 'Paper 1 practice — unseen poem', due: 'Thu', done: false, note: 'Annotate imagery first, thesis second.' },
-      { title: 'IO extract: Achebe, ch. 7', due: 'Mon', done: true, note: 'Recorded draft is in Drive.' },
-    ],
-    notes: [
-      { title: 'Motif bank', body: 'Light vs. dust in The Great Gatsby. Always pair with class.' },
-      { title: 'Oral outline', body: 'Global issue: dignity under colonial pressure. Text: Things Fall Apart + Persepolis.' },
-    ],
-    resources: [
-      { label: 'Poetry Foundation', href: 'https://www.poetryfoundation.org/' },
-      { label: 'IB English support', href: 'https://www.ibo.org/' },
-    ],
-  },
-  {
-    id: 'math',
-    name: 'Mathematics AA HL',
-    teacher: 'Mr. Chen',
-    room: 'S-108',
-    color: '#0C4160',
-    emoji: '∫',
-    blurb: 'Proofs, polynomials, and the occasional victory lap at the whiteboard.',
-    assignments: [
-      { title: 'IA draft 2 — regression model', due: 'Fri', done: false, note: 'Need residual plot + Rationale rewrite.' },
-      { title: 'Ex 12.3 odd problems', due: 'Wed', done: false, note: 'Skip 17 if you did the extension.' },
-    ],
-    notes: [
-      { title: 'Complex numbers', body: 'Argand diagrams: modulus is distance from origin. De Moivre for powers of cis θ.' },
-      { title: 'Calculus trap', body: 'Remember +C. Also: implicit diff when y is tangled in x.' },
-    ],
-    resources: [
-      { label: 'Desmos', href: 'https://www.desmos.com/calculator' },
-      { label: 'Khan Academy', href: 'https://www.khanacademy.org/math' },
-    ],
-  },
-  {
     id: 'bio',
-    name: 'Biology HL',
-    teacher: 'Dr. Sokha',
-    room: 'Lab 2',
+    name: 'Biology 30',
+    short: 'Bio 30',
+    teacher: 'Science',
+    room: '504',
     color: '#5C9E3D',
     emoji: '🧬',
-    blurb: 'Cells, ecology, and the smell of agar on a Tuesday morning.',
+    blurb: 'Alberta Bio 30 — cells, energy, genetics, and the lab in room 504.',
     assignments: [
       { title: 'Lab: enzyme rate vs temperature', due: 'Tue', done: false, note: 'Graph with error bars. Caption like a scientist.' },
-      { title: 'Topic 6 quiz', due: 'Fri', done: true, note: 'Heart, lungs, and the stubborn nephron.' },
+      { title: 'Diploma practice: photosynthesis & respiration', due: 'Fri', done: false, note: 'Room 504. Bring a calculator and a sharp pencil.' },
     ],
     notes: [
       { title: 'Photosynthesis', body: 'Light-dependent in thylakoid membrane. Calvin cycle in stroma. NADPH is the courier.' },
-      { title: 'IA idea', body: 'Salinity vs germination of local rice variety. Ask Dr. Sokha about greenhouse space.' },
+      { title: 'Genetics', body: 'Punnett squares are the map. Dihybrid crosses: 9:3:3:1 if independent assortment holds.' },
     ],
     resources: [
-      { label: 'BioNinja', href: 'https://ib.bioninja.com.au/' },
+      { label: 'LearnAlberta', href: 'https://www.learnalberta.ca/' },
       { label: 'HHMI BioInteractive', href: 'https://www.biointeractive.org/' },
     ],
   },
   {
-    id: 'history',
-    name: 'History HL',
-    teacher: 'Ms. Vannak',
-    room: 'H-101',
+    id: 'social',
+    name: 'Social Studies 30-1',
+    short: 'Social 30-1',
+    teacher: 'Humanities',
+    room: '208',
     color: '#FF8D3D',
     emoji: '🗺️',
-    blurb: 'Causes, consequences, and the footnotes that change everything.',
+    blurb: 'Ideology, liberalism, and the source analysis that lives on diploma day.',
     assignments: [
-      { title: 'Paper 2 plan — authoritarian states', due: 'Wed', done: false, note: 'Compare Mao & Castro. One paragraph per factor.' },
+      { title: 'Position paper: liberalism in practice', due: 'Wed', done: false, note: 'Room 208. Three sources, one argument, no fence-sitting.' },
+      { title: 'Source analysis practice', due: 'Mon', done: false, note: 'Identify the ideological perspective before you write.' },
     ],
     notes: [
-      { title: 'Origins of the Cold War', body: 'Orthodox / revisionist / post-revisionist. Always name a historian.' },
+      { title: 'Spectrum', body: 'Collectivism ↔ individualism. Classical liberalism is not the same as modern liberalism. Say so on the exam.' },
+      { title: 'Room 208 ritual', body: 'Thesis first. Evidence second. Counter-argument third. Then sit down.' },
     ],
     resources: [
-      { label: 'ActiveHistory', href: 'https://www.activehistory.co.uk/' },
+      { label: 'Alberta Social 30-1', href: 'https://www.alberta.ca/education' },
     ],
   },
   {
-    id: 'french',
-    name: 'French B SL',
-    teacher: 'Mme. Laurent',
-    room: 'L-012',
-    color: '#C0292D',
-    emoji: '🥐',
-    blurb: 'LabelFrancÉducation energy. Oui, even on Monday.',
+    id: 'cts',
+    name: 'CTS',
+    short: 'CTS',
+    teacher: 'Makerspace',
+    room: 'Makerspace',
+    color: '#0C4160',
+    emoji: '🛠️',
+    blurb: 'Career and Technology Studies — build it, print it, debug it, then name it.',
     assignments: [
-      { title: 'Journal: un souvenir de Phnom Penh', due: 'Mon', done: false, note: '200 mots. Passé composé vs imparfait.' },
+      { title: 'Makerspace project checkpoint', due: 'Thu', done: false, note: 'Photo the prototype. Log what broke and what you changed.' },
     ],
     notes: [
-      { title: 'Subjunctive triggers', body: 'Il faut que, bien que, pour que. Doubt and desire pull the mood.' },
+      { title: 'Shop rules', body: 'Goggles. Hair up. Don’t leave the laser running and wander to Maple Leaf Café.' },
     ],
     resources: [
-      { label: 'TV5Monde', href: 'https://apprendre.tv5monde.com/' },
+      { label: 'Tinkercad', href: 'https://www.tinkercad.com/' },
     ],
   },
   {
     id: 'art',
     name: 'Visual Arts',
-    teacher: 'Mr. Reyes',
-    room: 'Studio A',
-    color: '#F4D258',
+    short: 'Visual Arts',
+    teacher: 'Studio',
+    room: '310',
+    color: '#C0292D',
     emoji: '🎨',
-    blurb: 'Process portfolio, exhibition, and the courage to leave a canvas messy.',
+    blurb: 'Room 310 — process, critique, and the courage to leave a canvas messy.',
     assignments: [
-      { title: 'Comparative study slides 1–5', due: 'Thu', done: false, note: 'Khmer bas-relief vs contemporary collage.' },
+      { title: 'Studio series: three studies', due: 'Thu', done: false, note: 'Same subject, three materials. Photograph the walls of 310 before you leave.' },
     ],
     notes: [
-      { title: 'Exhibition thesis', body: 'Home as a movable map. Materials: tracing paper, river silt, red thread.' },
+      { title: 'Exhibition thread', body: 'Home as a movable map. Materials: tracing paper, river silt, red thread.' },
     ],
     resources: [
       { label: 'CIS Celebrating the Arts', href: 'https://www.cisp.edu.kh/' },
     ],
   },
   {
-    id: 'tok',
-    name: 'Theory of Knowledge',
-    teacher: 'Ms. Patel',
-    room: 'Seminar',
-    color: '#0C4160',
-    emoji: '🪞',
-    blurb: 'Knowledge questions, and the habit of asking “how do we know?”',
+    id: 'english',
+    name: 'English Language Arts',
+    short: 'English',
+    teacher: 'ELA',
+    room: 'TBA',
+    color: '#C0292D',
+    emoji: '📖',
+    blurb: 'Close reading, drama, and the quiet art of saying what you mean.',
     assignments: [
-      { title: 'Exhibition object 2 write-up', due: 'Fri', done: false, note: 'Link to prompt 11. Keep it personal, not Wikipedia.' },
+      { title: 'Personal response to texts', due: 'Thu', done: false, note: 'One critical, one personal. Name the technique.' },
     ],
     notes: [
-      { title: 'AOKs cheat sheet', body: 'History values testimony; natural sciences value reproducibility. Tension is the point.' },
+      { title: 'Motif bank', body: 'Always pair image with class. Diploma readers notice the pairing.' },
     ],
     resources: [
-      { label: 'TOK essay titles', href: 'https://www.ibo.org/' },
+      { label: 'Poetry Foundation', href: 'https://www.poetryfoundation.org/' },
     ],
   },
   {
-    id: 'cas',
-    name: 'CAS / Advisory',
-    teacher: 'Coach Lim',
-    room: 'Gym annex',
-    color: '#5C9E3D',
-    emoji: '🐻',
-    blurb: 'Bears pride, service hours, and the Soccer Academy after 3:20.',
+    id: 'math',
+    name: 'Mathematics',
+    short: 'Math',
+    teacher: 'Math',
+    room: 'TBA',
+    color: '#0C4160',
+    emoji: '∫',
+    blurb: 'Proofs, polynomials, and the occasional victory lap at the whiteboard.',
     assignments: [
-      { title: 'CAS reflection — river clean-up', due: 'Sun', done: false, note: 'Learning outcome 5. Photos in album.' },
+      { title: 'Practice set — transformations', due: 'Wed', done: false, note: 'Show the mapping, not just the graph.' },
     ],
     notes: [
-      { title: 'Season', body: 'Futsal Thursday. Bring both jerseys. Water. Pride.' },
+      { title: 'Calculus trap', body: 'Remember +C. Implicit diff when y is tangled in x.' },
     ],
     resources: [
-      { label: 'CIS Sports', href: 'https://sports.cisp.edu.kh/' },
+      { label: 'Desmos', href: 'https://www.desmos.com/calculator' },
     ],
   },
 ]
 
 export const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] as const
 
+/** Lunch is locked to 11:25–12:10; other bells are 80-minute Alberta-style blocks. */
 export const bells = [
-  { start: '07:45', end: '08:30' },
-  { start: '08:35', end: '09:20' },
-  { start: '09:25', end: '10:10' },
-  { start: '10:25', end: '11:10' },
-  { start: '11:15', end: '12:00' },
-  { start: '12:50', end: '13:35' },
-  { start: '13:40', end: '14:25' },
-  { start: '14:30', end: '15:15' },
+  { start: '08:00', end: '09:20' },
+  { start: '09:25', end: '10:45' },
+  { start: '11:25', end: '12:10' },
+  { start: '12:15', end: '13:35' },
+  { start: '13:40', end: '15:00' },
 ]
 
 const grid: Record<(typeof days)[number], (string | null)[]> = {
-  Mon: ['english', 'math', 'bio', 'history', 'french', 'tok', 'art', 'cas'],
-  Tue: ['math', 'english', 'french', 'bio', 'art', 'history', 'tok', null],
-  Wed: ['bio', 'math', 'english', 'french', 'cas', 'history', 'art', 'tok'],
-  Thu: ['history', 'bio', 'math', 'english', 'french', 'art', 'cas', null],
-  Fri: ['tok', 'english', 'math', 'bio', 'history', 'french', 'cas', 'art'],
+  Mon: ['bio', 'social', 'lunch', 'cts', 'art'],
+  Tue: ['social', 'bio', 'lunch', 'art', 'cts'],
+  Wed: ['bio', 'english', 'lunch', 'math', 'art'],
+  Thu: ['social', 'math', 'lunch', 'cts', 'english'],
+  Fri: ['english', 'bio', 'lunch', 'art', 'social'],
 }
 
 export function timetableCell(day: (typeof days)[number], period: number) {
@@ -205,7 +163,7 @@ export const events = [
   { date: '2026-08-28', title: 'Celebrating the Arts evening', tag: 'arts' },
   { date: '2026-09-01', title: 'Soccer Academy fixture vs. rival', tag: 'sport' },
   { date: '2026-09-04', title: 'CAS river project', tag: 'cas' },
-  { date: '2026-09-08', title: 'IB Diploma parent briefing', tag: 'ib' },
+  { date: '2026-09-08', title: 'Diploma parent briefing', tag: 'school' },
 ]
 
 export const funFacts = [

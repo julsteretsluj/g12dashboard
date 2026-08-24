@@ -22,12 +22,22 @@ export default function TimetableGrid() {
               </th>
               {days.map((d) => {
                 const id = timetableCell(d, i)
+                if (id === 'lunch') {
+                  return (
+                    <td key={d}>
+                      <span className="cell lunch">
+                        Lunch
+                        <small>11:25–12:10</small>
+                      </span>
+                    </td>
+                  )
+                }
                 const c = classes.find((x) => x.id === id)
                 if (!c) return <td key={d}><span className="cell empty">Study / flex</span></td>
                 return (
                   <td key={d}>
                     <Link className="cell" style={{ background: c.color }} to={`/class/${c.id}`}>
-                      {c.emoji} {c.name.split(':')[0]}
+                      {c.emoji} {c.short}
                       <small>{c.room}</small>
                     </Link>
                   </td>

@@ -95,13 +95,20 @@ export default function ClassPage() {
             src="https://en.wikipedia.org/wiki/Cell_(biology)"
           />
         )}
-        {course.id === 'french' && (
+        {course.id === 'social' && (
           <iframe
-            className="embed"
-            style={{ marginTop: 14, minHeight: 200 }}
-            title="Radio France"
-            src="https://open.spotify.com/embed/playlist/37i9dQZF1DX3bH0P2uDnWA"
-            allow="autoplay; clipboard-write; encrypted-media"
+            className="embed tall"
+            style={{ marginTop: 14 }}
+            title="Liberalism"
+            src="https://en.wikipedia.org/wiki/Liberalism"
+          />
+        )}
+        {course.id === 'cts' && (
+          <iframe
+            className="embed tall"
+            style={{ marginTop: 14, minHeight: 360 }}
+            title="Tinkercad"
+            src="https://www.tinkercad.com/"
           />
         )}
         {course.id === 'art' && (
