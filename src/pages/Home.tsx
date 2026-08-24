@@ -43,7 +43,7 @@ export default function Home() {
           <Todo />
         </section>
         <section className="card">
-          <h3>August on campus</h3>
+          <h3>This month</h3>
           <MiniCalendar />
         </section>
 

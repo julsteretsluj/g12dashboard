@@ -1,5 +1,10 @@
 import { events } from '../data/school'
 
+function inMonth(date: string, year: number, month: number) {
+  const [y, m] = date.split('-').map(Number)
+  return y === year && m === month + 1
+}
+
 export default function MiniCalendar() {
   const today = new Date()
   const year = today.getFullYear()
@@ -8,7 +13,15 @@ export default function MiniCalendar() {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const startPad = (first + 6) % 7
   const cells = [...Array(startPad).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
-  const eventDays = new Set(events.map((e) => Number(e.date.slice(-2))))
+  const monthEvents = events.filter((e) => inMonth(e.date, year, month) || (e.end && inMonth(e.end, year, month)))
+  const eventDays = new Set(
+    monthEvents.flatMap((e) => {
+      const start = Number(e.date.slice(-2))
+      const finish = e.end && inMonth(e.end, year, month) ? Number(e.end.slice(-2)) : start
+      return Array.from({ length: finish - start + 1 }, (_, i) => start + i)
+    }),
+  )
+  const upcoming = events.filter((e) => e.date >= today.toISOString().slice(0, 10)).slice(0, 5)
 
   return (
     <>
@@ -28,9 +41,9 @@ export default function MiniCalendar() {
         ))}
       </div>
       <ul className="event-list">
-        {events.slice(0, 4).map((e) => (
+        {upcoming.map((e) => (
           <li key={e.date + e.title}>
-            <time>{e.date.slice(5)}</time>
+            <time>{e.end ? `${e.date.slice(5)}–${e.end.slice(5)}` : e.date.slice(5)}</time>
             {e.title}
           </li>
         ))}
