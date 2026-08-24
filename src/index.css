@@ -543,10 +543,29 @@ table.tt th {
   font-size: 14px;
 }
 
-.two {
+.stat-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+  margin-top: 4px;
+}
+
+select.note-box {
+  appearance: auto;
 }
 
 .assignment {
@@ -801,7 +820,8 @@ table.tt th {
   .hero,
   .bento,
   .two,
-  .class-grid {
+  .class-grid,
+  .stat-row {
     grid-template-columns: 1fr;
   }
   .span-2 {

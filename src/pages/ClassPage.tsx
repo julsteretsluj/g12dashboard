@@ -9,11 +9,12 @@ import {
   type TaskItem,
   type Workspace,
 } from '../lib/workspace'
+import ClassAcademics from '../components/ClassAcademics'
 
 export default function ClassPage() {
   const { id } = useParams()
   const course = classes.find((c) => c.id === id)
-  const [ws, setWs] = useState<Workspace>({ notes: [], library: [], tasks: [] })
+  const [ws, setWs] = useState<Workspace>(() => loadWorkspace(id ?? ''))
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDue, setTaskDue] = useState('')
   const [noteTitle, setNoteTitle] = useState('')
@@ -77,6 +78,8 @@ export default function ClassPage() {
           Back to desk
         </Link>
       </header>
+
+      <ClassAcademics ws={ws} update={update} />
 
       <section className="card" style={{ marginBottom: 16 }}>
         <h3>Tasks</h3>
