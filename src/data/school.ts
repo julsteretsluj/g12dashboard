@@ -64,14 +64,14 @@ export const classes: ClassInfo[] = [
 
 export const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] as const
 
-/** Homeroom opens the day. Lunch is 11:25–12:10. Only four courses besides that. */
+/** Homeroom, then 95-min blocks so Bio 30 lands 08:15–09:50. Lunch stays 11:25–12:10. */
 export const bells = [
   { start: '07:50', end: '08:10' },
-  { start: '08:15', end: '09:25' },
-  { start: '09:30', end: '10:40' },
+  { start: '08:15', end: '09:50' },
+  { start: '09:55', end: '11:20' },
   { start: '11:25', end: '12:10' },
-  { start: '12:15', end: '13:25' },
-  { start: '13:30', end: '14:40' },
+  { start: '12:15', end: '13:50' },
+  { start: '13:55', end: '15:30' },
 ]
 
 const grid: Record<(typeof days)[number], (string | null)[]> = {
