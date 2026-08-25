@@ -3,9 +3,17 @@ import { loadWorkspace, saveWorkspace, type Workspace } from './workspace'
 
 export type TodoItem = { id: string; text: string; done: boolean }
 
+export type TimerSettings = {
+  title: string
+  minutes: number
+}
+
+export const defaultTimer = (): TimerSettings => ({ title: 'Focus maple', minutes: 25 })
+
 export type StudioData = {
   todo: TodoItem[]
   workspaces: Record<string, Workspace>
+  timer: TimerSettings
 }
 
 export function readLocalStudio(): StudioData {
@@ -23,11 +31,21 @@ export function readLocalStudio(): StudioData {
   } catch {
     todo = []
   }
-  return { todo, workspaces }
+  let timer = defaultTimer()
+  try {
+    const raw = localStorage.getItem('cis-pomo-v1')
+    if (raw) timer = { ...defaultTimer(), ...JSON.parse(raw) }
+  } catch {
+    timer = defaultTimer()
+  }
+  timer.minutes = Math.min(180, Math.max(1, Number(timer.minutes) || 25))
+  timer.title = timer.title.trim() || 'Focus maple'
+  return { todo, workspaces, timer }
 }
 
 export function writeLocalStudio(data: StudioData) {
   localStorage.setItem('cis-todo-v2', JSON.stringify(data.todo ?? []))
+  localStorage.setItem('cis-pomo-v1', JSON.stringify(data.timer ?? defaultTimer()))
   for (const [id, ws] of Object.entries(data.workspaces ?? {})) {
     saveWorkspace(id, ws)
   }

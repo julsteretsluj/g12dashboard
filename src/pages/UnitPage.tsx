@@ -101,36 +101,41 @@ export default function UnitPage() {
       </header>
 
       <section className="card" style={{ marginBottom: 16 }}>
-        <h3>Unit notes</h3>
-        <select
-          className="note-box"
-          value={unit.status}
-          onChange={(e) =>
-            update({
-              ...ws,
-              units: ws.units.map((u) =>
-                u.id === unit.id ? { ...u, status: e.target.value as typeof unit.status } : u,
-              ),
-            })
-          }
-          style={{ maxWidth: 180, marginBottom: 8 }}
-        >
-          <option value="upcoming">upcoming</option>
-          <option value="current">current</option>
-          <option value="done">done</option>
-        </select>
-        <textarea
-          className="note-box"
-          rows={3}
-          placeholder="Big ideas, labs, pages…"
-          value={unit.focus}
-          onChange={(e) =>
-            update({
-              ...ws,
-              units: ws.units.map((u) => (u.id === unit.id ? { ...u, focus: e.target.value } : u)),
-            })
-          }
-        />
+        <h3>This unit</h3>
+        <label className="field">
+          <span className="meta">Status</span>
+          <select
+            className="note-box field-control"
+            value={unit.status}
+            onChange={(e) =>
+              update({
+                ...ws,
+                units: ws.units.map((u) =>
+                  u.id === unit.id ? { ...u, status: e.target.value as typeof unit.status } : u,
+                ),
+              })
+            }
+          >
+            <option value="upcoming">upcoming</option>
+            <option value="current">current</option>
+            <option value="done">done</option>
+          </select>
+        </label>
+        <label className="field">
+          <span className="meta">Big ideas</span>
+          <textarea
+            className="note-box field-control"
+            rows={4}
+            placeholder="Labs, pages, what this unit is actually about…"
+            value={unit.focus}
+            onChange={(e) =>
+              update({
+                ...ws,
+                units: ws.units.map((u) => (u.id === unit.id ? { ...u, focus: e.target.value } : u)),
+              })
+            }
+          />
+        </label>
       </section>
 
       <div className="two">

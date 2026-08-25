@@ -912,6 +912,27 @@ table.tt td.now-hit {
   margin-top: 4px;
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.field .field-control {
+  display: block;
+  width: 100%;
+  max-width: none;
+  flex: none;
+  resize: vertical;
+}
+
+.field select.field-control {
+  max-width: 220px;
+  appearance: auto;
+}
+
 select.note-box {
   appearance: auto;
 }
@@ -1064,9 +1085,64 @@ select.note-box {
 
 .pomodoro {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.pomo-title {
+  display: block;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: text;
+  text-align: left;
+}
+
+.pomo-title-input {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px 8px;
+  font-family: var(--script);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--red);
+  width: min(220px, 100%);
+  margin-bottom: 4px;
+}
+
+.pomo-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.pomo-presets .btn {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.pomo-presets .btn.on {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+
+.pomo-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pomo-custom input {
+  width: 56px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 5px 6px;
+  font-size: 13px;
+  background: #fafafa;
 }
 
 .pomo-time {

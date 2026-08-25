@@ -24,10 +24,22 @@ service cloud.firestore {
     }
 
     function isValidStudio() {
-      return request.resource.data.keys().hasOnly(['todo', 'workspaces', 'updatedAt'])
+      return request.resource.data.keys().hasOnly(['todo', 'workspaces', 'updatedAt', 'timer'])
         && request.resource.data.todo is list
         && request.resource.data.workspaces is map
-        && request.resource.data.updatedAt is number;
+        && request.resource.data.updatedAt is number
+        && request.resource.data.timer is map
+        && isValidTimer();
+    }
+
+    function isValidTimer() {
+      return request.resource.data.timer.keys().hasOnly(['title', 'minutes'])
+        && request.resource.data.timer.title is string
+        && request.resource.data.timer.title.size() > 0
+        && request.resource.data.timer.title.size() <= 40
+        && request.resource.data.timer.minutes is number
+        && request.resource.data.timer.minutes >= 1
+        && request.resource.data.timer.minutes <= 180;
     }
   }
 }

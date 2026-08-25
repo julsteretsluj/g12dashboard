@@ -17,7 +17,7 @@ import {
 } from 'react'
 import { loadCloudStudio, saveCloudStudio } from './cloud'
 import { auth, firebaseReady } from './firebase'
-import { readLocalStudio, writeLocalStudio, type StudioData, type TodoItem } from './studio'
+import { readLocalStudio, writeLocalStudio, type StudioData, type TimerSettings, type TodoItem } from './studio'
 import { emptyWorkspace, type Workspace } from './workspace'
 
 type AuthValue = {
@@ -32,6 +32,7 @@ type AuthValue = {
   logOut: () => Promise<void>
   patchWorkspace: (classId: string, next: Workspace) => void
   patchTodo: (next: TodoItem[]) => void
+  patchTimer: (next: TimerSettings) => void
 }
 
 const AuthContext = createContext<AuthValue | null>(null)
@@ -118,6 +119,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [apply],
   )
 
+  const patchTimer = useCallback(
+    (next: TimerSettings) => {
+      apply({ ...studioRef.current, timer: next })
+    },
+    [apply],
+  )
+
   const fail = (err: unknown) => {
     setMessage(err instanceof Error ? err.message : 'Sign-in failed')
   }
@@ -152,8 +160,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       patchWorkspace,
       patchTodo,
+      patchTimer,
     }),
-    [message, patchTodo, patchWorkspace, ready, studio, sync, user],
+    [message, patchTimer, patchTodo, patchWorkspace, ready, studio, sync, user],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
