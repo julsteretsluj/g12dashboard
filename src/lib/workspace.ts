@@ -54,6 +54,8 @@ export type NoteItem = {
   id: string
   title: string
   body: string
+  topic: string
+  date: string
   unitId: string
   taskId: string
   testId: string
@@ -112,6 +114,8 @@ export function hydrateWorkspace(parsed: Partial<Workspace>): Workspace {
     taskId: n.taskId ?? '',
     testId: n.testId ?? '',
     emoji: n.emoji ?? '',
+    topic: n.topic ?? '',
+    date: n.date ?? '',
   }))
   base.classEmoji = base.classEmoji ?? ''
   return base
@@ -194,8 +198,12 @@ export function dropTaskTree(ws: Workspace, rootId: string): Workspace {
 }
 
 export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<NoteItem>): NoteItem {
+  const now = new Date()
+  const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   return {
     body: '',
+    topic: '',
+    date,
     unitId: '',
     taskId: '',
     testId: '',

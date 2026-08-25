@@ -3,6 +3,7 @@ import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import type { NoteItem } from '../lib/workspace'
 import EmojiPick from '../components/EmojiPick'
+import DateField from '../components/DateField'
 
 export default function NotePage() {
   const { id, unitId, taskId, testId, noteId } = useParams()
@@ -81,29 +82,45 @@ export default function NotePage() {
             label="Note emoji"
           />
           <div>
-            <p className="kicker">Note</p>
+            <p className="kicker">{current.topic.trim() || 'Note'}</p>
             <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{current.title || 'Untitled'}</h2>
           </div>
         </div>
         <Link className="btn ghost" to={back}>
-          Close
+          Back
         </Link>
       </header>
 
-      <section className="card note-sheet">
-        <input
-          className="note-title-input"
-          value={current.title}
-          onChange={(e) => patch({ title: e.target.value })}
-          placeholder="Title"
-        />
-        <textarea
-          className="note-body-input"
-          value={current.body}
-          onChange={(e) => patch({ body: e.target.value })}
-          placeholder="Write here…"
-          rows={16}
-        />
+      <section className="card">
+        <label className="field">
+          <span className="meta">Title</span>
+          <input
+            className="note-box field-control"
+            value={current.title}
+            onChange={(e) => patch({ title: e.target.value })}
+            placeholder="Title"
+          />
+        </label>
+        <DateField label="Date" value={current.date} onChange={(date) => patch({ date })} />
+        <label className="field">
+          <span className="meta">Topic</span>
+          <input
+            className="note-box field-control"
+            value={current.topic}
+            onChange={(e) => patch({ topic: e.target.value })}
+            placeholder="Lecture, lab, chapter…"
+          />
+        </label>
+        <label className="field">
+          <span className="meta">Notes</span>
+          <textarea
+            className="note-box field-control"
+            value={current.body}
+            onChange={(e) => patch({ body: e.target.value })}
+            placeholder="Write here…"
+            rows={16}
+          />
+        </label>
         <button
           className="btn ghost"
           type="button"

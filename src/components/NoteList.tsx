@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { NoteItem } from '../lib/workspace'
+import { prettyDate } from './DateField'
 
 type Props = {
   notes: NoteItem[]
@@ -22,17 +23,21 @@ export default function NoteList({ notes, hrefFor, onCreate, empty = 'No notes y
   return (
     <>
       {notes.length === 0 && empty && <p className="meta">{empty}</p>}
-      <div className="notes-grid">
-        {notes.map((n) => (
-          <Link key={n.id} className="sticky sticky-link" to={hrefFor(n.id)}>
+      {notes.map((n) => {
+        const when = n.date ? prettyDate(n.date) : ''
+        const topic = n.topic.trim()
+        const meta = [topic, when].filter(Boolean).join(' · ') || 'Open'
+        return (
+          <Link key={n.id} className="class-tile" to={hrefFor(n.id)} style={{ marginBottom: 8 }}>
             <h4>
               {n.emoji ? `${n.emoji} ` : ''}
               {n.title || 'Untitled'}
             </h4>
-            <p>{n.body.slice(0, 120) || 'Empty'}</p>
+            <p>{meta}</p>
+            {n.body.trim() ? <p className="class-tile-blurb">{n.body.trim()}</p> : null}
           </Link>
-        ))}
-      </div>
+        )
+      })}
       <form className="todo-add" style={{ marginTop: 12 }} onSubmit={add}>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New note" />
         <button className="btn" type="submit">
