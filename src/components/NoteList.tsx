@@ -25,7 +25,10 @@ export default function NoteList({ notes, hrefFor, onCreate, empty = 'No notes y
       <div className="notes-grid">
         {notes.map((n) => (
           <Link key={n.id} className="sticky sticky-link" to={hrefFor(n.id)}>
-            <h4>{n.title || 'Untitled'}</h4>
+            <h4>
+              {n.emoji ? `${n.emoji} ` : ''}
+              {n.title || 'Untitled'}
+            </h4>
             <p>{n.body.slice(0, 120) || 'Empty'}</p>
           </Link>
         ))}

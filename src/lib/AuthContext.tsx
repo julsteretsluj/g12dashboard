@@ -18,7 +18,7 @@ import {
 import { loadCloudStudio, saveCloudStudio } from './cloud'
 import { auth, firebaseReady } from './firebase'
 import { readLocalStudio, writeLocalStudio, type StudioData, type TimerSettings, type TodoItem } from './studio'
-import { emptyWorkspace, type Workspace } from './workspace'
+import { emptyWorkspace, hydrateWorkspace, type Workspace } from './workspace'
 
 type AuthValue = {
   configured: boolean
@@ -175,5 +175,5 @@ export function useAuth() {
 }
 
 export function workspaceOf(studio: StudioData, classId: string): Workspace {
-  return studio.workspaces[classId] ?? emptyWorkspace()
+  return studio.workspaces[classId] ? hydrateWorkspace(studio.workspaces[classId]) : emptyWorkspace()
 }

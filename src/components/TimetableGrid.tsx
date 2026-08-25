@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { activeDay, activePeriod, bells, classes, dayCycle, days, timetableCell } from '../data/school'
+import { useAuth, workspaceOf } from '../lib/AuthContext'
+import { subjectEmoji } from '../lib/emoji'
 
 export default function TimetableGrid() {
   const [now, setNow] = useState(() => new Date())
+  const { studio } = useAuth()
   const today = activeDay(now)
   const period = activePeriod(now)
 
@@ -60,7 +63,7 @@ export default function TimetableGrid() {
                   <td key={d} className={`${col ? 'now-col' : ''} ${here ? 'now-hit' : ''}`.trim()}>
                     <Link className={`cell ${here ? 'now' : ''}`} style={{ background: c.color }} to={`/class/${c.id}`}>
                       {here ? 'Now · ' : ''}
-                      {c.emoji} {c.short}
+                      {subjectEmoji(c.id, workspaceOf(studio, c.id).classEmoji)} {c.short}
                       <small>{c.room}</small>
                     </Link>
                   </td>

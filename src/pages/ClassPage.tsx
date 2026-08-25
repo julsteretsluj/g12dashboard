@@ -7,6 +7,8 @@ import { useWorkspace } from '../lib/useWorkspace'
 import ClassAcademics from '../components/ClassAcademics'
 import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
+import EmojiPick from '../components/EmojiPick'
+import { subjectEmoji } from '../lib/emoji'
 
 export default function ClassPage() {
   const { id } = useParams()
@@ -36,6 +38,7 @@ export default function ClassPage() {
       unitId: '',
       attachments: [],
       submissions: [],
+      emoji: '',
     }
     update({ ...ws, tasks: [...ws.tasks, task] })
     setTaskTitle('')
@@ -54,12 +57,22 @@ export default function ClassPage() {
   return (
     <>
       <header className="page-head">
-        <div>
-          <p className="kicker">{course.emoji} {course.room}</p>
-          <h2 style={{ margin: 0, fontSize: 36, letterSpacing: '-0.04em' }}>{course.name}</h2>
-          <p className="meta" style={{ marginTop: 8 }}>
-            {course.teacher} · {course.blurb}
-          </p>
+        <div className="page-head-title">
+          <EmojiPick
+            value={ws.classEmoji}
+            fallback={course.emoji}
+            onChange={(classEmoji) => update({ ...ws, classEmoji })}
+            label="Class emoji"
+          />
+          <div>
+            <p className="kicker">
+              {subjectEmoji(course.id, ws.classEmoji)} {course.room}
+            </p>
+            <h2 style={{ margin: 0, fontSize: 36, letterSpacing: '-0.04em' }}>{course.name}</h2>
+            <p className="meta" style={{ marginTop: 8 }}>
+              {course.teacher} · {course.blurb}
+            </p>
+          </div>
         </div>
         <Link className="btn ghost" to="/">
           Back to desk
@@ -75,6 +88,13 @@ export default function ClassPage() {
           {loose.map((task) => (
             <article key={task.id} className="assignment">
               <div className="todo-add">
+                <EmojiPick
+                  size="sm"
+                  value={task.emoji}
+                  fallback="📌"
+                  onChange={(emoji) => patchTask(task.id, { emoji })}
+                  label="Task emoji"
+                />
                 <input
                   type="checkbox"
                   checked={task.done}

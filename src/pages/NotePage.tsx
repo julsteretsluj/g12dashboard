@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import type { NoteItem } from '../lib/workspace'
+import EmojiPick from '../components/EmojiPick'
 
 export default function NotePage() {
   const { id, unitId, taskId, testId, noteId } = useParams()
@@ -62,12 +63,20 @@ export default function NotePage() {
             <Link to={`/class/${id}/unit/${unit.id}/test/${test.id}`}>{test.name || 'Test'}</Link>
           </>
         )}
-        <span> / {current.title || 'Note'}</span>
+        <span> / {current.emoji ? `${current.emoji} ` : ''}{current.title || 'Note'}</span>
       </p>
       <header className="page-head">
-        <div>
-          <p className="kicker">Note</p>
-          <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{current.title || 'Untitled'}</h2>
+        <div className="page-head-title">
+          <EmojiPick
+            value={current.emoji}
+            fallback="🗒️"
+            onChange={(emoji) => patch({ emoji })}
+            label="Note emoji"
+          />
+          <div>
+            <p className="kicker">Note</p>
+            <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{current.title || 'Untitled'}</h2>
+          </div>
         </div>
         <Link className="btn ghost" to={back}>
           Close

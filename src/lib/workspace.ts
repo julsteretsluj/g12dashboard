@@ -14,6 +14,7 @@ export type TaskItem = {
   note: string
   done: boolean
   unitId: string
+  emoji: string
   attachments: DocItem[]
   submissions: DocItem[]
 }
@@ -23,6 +24,7 @@ export type UnitItem = {
   name: string
   status: 'upcoming' | 'current' | 'done'
   focus: string
+  emoji: string
 }
 
 export type TestItem = {
@@ -33,12 +35,14 @@ export type TestItem = {
   score: string
   outOf: string
   unitId: string
+  emoji: string
 }
 
 export type ReviewItem = {
   id: string
   text: string
   done: boolean
+  emoji: string
 }
 
 export type NoteItem = {
@@ -48,6 +52,7 @@ export type NoteItem = {
   unitId: string
   taskId: string
   testId: string
+  emoji: string
 }
 
 export type Workspace = {
@@ -61,6 +66,7 @@ export type Workspace = {
   schoolWeight: string
   diplomaScore: string
   diplomaOutOf: string
+  classEmoji: string
 }
 
 export const emptyWorkspace = (): Workspace => ({
@@ -74,22 +80,31 @@ export const emptyWorkspace = (): Workspace => ({
   schoolWeight: '70',
   diplomaScore: '',
   diplomaOutOf: '100',
+  classEmoji: '',
 })
+
+export function hydrateWorkspace(parsed: Partial<Workspace>): Workspace {
+  const base = { ...emptyWorkspace(), ...parsed }
+  base.tasks = (base.tasks ?? []).map((t) => ({ ...t, unitId: t.unitId ?? '', emoji: t.emoji ?? '' }))
+  base.units = (base.units ?? []).map((u) => ({ ...u, emoji: u.emoji ?? '' }))
+  base.tests = (base.tests ?? []).map((t) => ({ ...t, emoji: t.emoji ?? '' }))
+  base.reviews = (base.reviews ?? []).map((r) => ({ ...r, emoji: r.emoji ?? '' }))
+  base.notes = (base.notes ?? []).map((n) => ({
+    ...n,
+    unitId: n.unitId ?? '',
+    taskId: n.taskId ?? '',
+    testId: n.testId ?? '',
+    emoji: n.emoji ?? '',
+  }))
+  base.classEmoji = base.classEmoji ?? ''
+  return base
+}
 
 export function loadWorkspace(classId: string): Workspace {
   const raw = localStorage.getItem(`cis-ws-${classId}`)
   if (!raw) return emptyWorkspace()
   try {
-    const parsed = JSON.parse(raw) as Partial<Workspace>
-    const base = { ...emptyWorkspace(), ...parsed }
-    base.tasks = (base.tasks ?? []).map((t) => ({ ...t, unitId: t.unitId ?? '' }))
-    base.notes = (base.notes ?? []).map((n) => ({
-      ...n,
-      unitId: n.unitId ?? '',
-      taskId: n.taskId ?? '',
-      testId: n.testId ?? '',
-    }))
-    return base
+    return hydrateWorkspace(JSON.parse(raw) as Partial<Workspace>)
   } catch {
     return emptyWorkspace()
   }
@@ -125,6 +140,7 @@ export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<Note
     unitId: '',
     taskId: '',
     testId: '',
+    emoji: '',
     ...partial,
   }
 }

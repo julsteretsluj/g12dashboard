@@ -7,11 +7,14 @@ import Weather from '../components/Weather'
 import { classes, funFacts } from '../data/school'
 import { Link } from 'react-router-dom'
 import { useMemo, useState } from 'react'
+import { useAuth, workspaceOf } from '../lib/AuthContext'
+import { subjectEmoji } from '../lib/emoji'
 import DeskPet from '../components/DeskPet'
 
 export default function Home() {
   const fact = useMemo(() => funFacts[new Date().getDate() % funFacts.length], [])
   const [mood, setMood] = useState<string | null>(null)
+  const { studio } = useAuth()
 
   return (
     <>
@@ -90,7 +93,7 @@ export default function Home() {
             {classes.map((c) => (
               <Link key={c.id} className="class-tile" style={{ borderLeftColor: c.color }} to={`/class/${c.id}`}>
                 <h4>
-                  {c.emoji} {c.name}
+                  {subjectEmoji(c.id, workspaceOf(studio, c.id).classEmoji)} {c.name}
                 </h4>
                 <p>
                   {c.teacher} · {c.room}

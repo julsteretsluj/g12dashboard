@@ -1,7 +1,7 @@
 import { classes } from '../data/school'
 import { loadWorkspace, saveWorkspace, type Workspace } from './workspace'
 
-export type TodoItem = { id: string; text: string; done: boolean }
+export type TodoItem = { id: string; text: string; done: boolean; emoji: string }
 
 export type TimerSettings = {
   title: string
@@ -27,7 +27,7 @@ export function readLocalStudio(): StudioData {
   let todo: TodoItem[] = []
   try {
     const raw = localStorage.getItem('cis-todo-v2')
-    if (raw) todo = JSON.parse(raw) as TodoItem[]
+    if (raw) todo = (JSON.parse(raw) as TodoItem[]).map((t) => ({ ...t, emoji: t.emoji ?? '' }))
   } catch {
     todo = []
   }

@@ -11,9 +11,12 @@ import Studio from './pages/Studio'
 import { classes } from './data/school'
 import AccountBar from './components/AccountBar'
 import DeskPet from './components/DeskPet'
+import { useAuth, workspaceOf } from './lib/AuthContext'
+import { subjectEmoji } from './lib/emoji'
 
 export default function App() {
   const { pathname } = useLocation()
+  const { studio } = useAuth()
   const showBuddy = pathname !== '/'
 
   return (
@@ -52,7 +55,7 @@ export default function App() {
           <div className="nav-label">Classes</div>
           {classes.map((c) => (
             <NavLink key={c.id} to={`/class/${c.id}`}>
-              <span>{c.emoji}</span>
+              <span>{subjectEmoji(c.id, workspaceOf(studio, c.id).classEmoji)}</span>
               {c.short}
             </NavLink>
           ))}

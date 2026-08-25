@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState, type FormEvent } from 'react'
 import { newId, pct, schoolAverage, type Workspace } from '../lib/workspace'
+import EmojiPick from './EmojiPick'
 
 export default function ClassAcademics({
   classId,
@@ -28,7 +29,7 @@ export default function ClassAcademics({
       ...ws,
       units: [
         ...ws.units,
-        { id: newId(), name: unitName.trim(), status: 'upcoming', focus: '' },
+        { id: newId(), name: unitName.trim(), status: 'upcoming', focus: '', emoji: '' },
       ],
     })
     setUnitName('')
@@ -67,7 +68,10 @@ export default function ClassAcademics({
                 className="class-tile"
                 to={`/class/${classId}/unit/${u.id}`}
               >
-                <h4>{u.name}</h4>
+                <h4>
+                  {u.emoji ? `${u.emoji} ` : ''}
+                  {u.name}
+                </h4>
                 <p>
                   {u.status} · {tasks} assignments · {tests} tests
                 </p>
@@ -132,7 +136,19 @@ export default function ClassAcademics({
         <section className="card">
           <h3>Still fuzzy</h3>
           {ws.reviews.map((r) => (
-            <label key={r.id} className={`todo-row ${r.done ? 'done' : ''}`}>
+            <div key={r.id} className={`todo-row ${r.done ? 'done' : ''}`}>
+              <EmojiPick
+                size="sm"
+                value={r.emoji}
+                fallback="💭"
+                onChange={(emoji) =>
+                  update({
+                    ...ws,
+                    reviews: ws.reviews.map((x) => (x.id === r.id ? { ...x, emoji } : x)),
+                  })
+                }
+                label="Idea emoji"
+              />
               <input
                 type="checkbox"
                 checked={r.done}
@@ -142,6 +158,7 @@ export default function ClassAcademics({
                     reviews: ws.reviews.map((x) => (x.id === r.id ? { ...x, done: !x.done } : x)),
                   })
                 }
+                aria-label={r.text}
               />
               <span>{r.text}</span>
               <button
@@ -151,7 +168,7 @@ export default function ClassAcademics({
               >
                 Delete
               </button>
-            </label>
+            </div>
           ))}
           <form
             className="todo-add"
@@ -160,7 +177,7 @@ export default function ClassAcademics({
               if (!review.trim()) return
               update({
                 ...ws,
-                reviews: [...ws.reviews, { id: newId(), text: review.trim(), done: false }],
+                reviews: [...ws.reviews, { id: newId(), text: review.trim(), done: false, emoji: '' }],
               })
               setReview('')
             }}

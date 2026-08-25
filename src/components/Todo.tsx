@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../lib/AuthContext'
+import EmojiPick from './EmojiPick'
 
 export default function Todo() {
   const { studio, patchTodo } = useAuth()
@@ -18,6 +19,15 @@ export default function Todo() {
       {items.length === 0 && <p className="meta">No tasks yet.</p>}
       {items.map((item) => (
         <div key={item.id} className={`todo-row ${item.done ? 'done' : ''}`}>
+          <EmojiPick
+            size="sm"
+            value={item.emoji}
+            fallback="☑️"
+            onChange={(emoji) =>
+              setItems((xs) => xs.map((x) => (x.id === item.id ? { ...x, emoji } : x)))
+            }
+            label="To-do emoji"
+          />
           <input
             type="checkbox"
             checked={item.done}
@@ -96,7 +106,7 @@ export default function Todo() {
           if (!text.trim()) return
           setItems((xs) => [
             ...xs,
-            { id: crypto.randomUUID(), text: text.trim(), done: false },
+            { id: crypto.randomUUID(), text: text.trim(), done: false, emoji: '' },
           ])
           setText('')
         }}

@@ -4,6 +4,7 @@ import { useWorkspace } from '../lib/useWorkspace'
 import { newId, pct, blankNote, unitNotes } from '../lib/workspace'
 import DateField, { prettyDate } from '../components/DateField'
 import NoteList from '../components/NoteList'
+import EmojiPick from '../components/EmojiPick'
 import { useState, type FormEvent } from 'react'
 
 export default function UnitPage() {
@@ -52,6 +53,7 @@ export default function UnitPage() {
           unitId,
           attachments: [],
           submissions: [],
+          emoji: '',
         },
       ],
     })
@@ -76,6 +78,7 @@ export default function UnitPage() {
           score: '',
           outOf: '100',
           unitId,
+          emoji: '',
         },
       ],
     })
@@ -88,12 +91,25 @@ export default function UnitPage() {
     <>
       <p className="crumbs">
         <Link to={`/class/${id}`}>{course.short}</Link>
-        <span> / {unit.name}</span>
+        <span> / {unit.emoji ? `${unit.emoji} ` : ''}{unit.name}</span>
       </p>
       <header className="page-head">
-        <div>
-          <p className="kicker">{unit.status}</p>
-          <h2 style={{ margin: 0, fontSize: 36, letterSpacing: '-0.04em' }}>{unit.name}</h2>
+        <div className="page-head-title">
+          <EmojiPick
+            value={unit.emoji}
+            fallback="📦"
+            onChange={(emoji) =>
+              update({
+                ...ws,
+                units: ws.units.map((u) => (u.id === unit.id ? { ...u, emoji } : u)),
+              })
+            }
+            label="Unit emoji"
+          />
+          <div>
+            <p className="kicker">{unit.status}</p>
+            <h2 style={{ margin: 0, fontSize: 36, letterSpacing: '-0.04em' }}>{unit.name}</h2>
+          </div>
         </div>
         <Link className="btn ghost" to={`/class/${id}`}>
           All units
@@ -144,7 +160,10 @@ export default function UnitPage() {
           {tasks.length === 0 && <p className="meta">None yet.</p>}
           {tasks.map((t) => (
             <Link key={t.id} className="class-tile" to={`/class/${id}/unit/${unitId}/task/${t.id}`} style={{ marginBottom: 8 }}>
-              <h4>{t.title || 'Untitled'}</h4>
+              <h4>
+                {t.emoji ? `${t.emoji} ` : ''}
+                {t.title || 'Untitled'}
+              </h4>
               <p>{t.done ? 'Settled' : t.due ? `Due ${prettyDate(t.due)}` : 'Open'}</p>
             </Link>
           ))}
@@ -165,7 +184,10 @@ export default function UnitPage() {
             const p = pct(t.score, t.outOf)
             return (
               <Link key={t.id} className="class-tile" to={`/class/${id}/unit/${unitId}/test/${t.id}`} style={{ marginBottom: 8 }}>
-                <h4>{t.name || 'Untitled'}</h4>
+                <h4>
+                  {t.emoji ? `${t.emoji} ` : ''}
+                  {t.name || 'Untitled'}
+                </h4>
                 <p>
                   {t.kind}
                   {t.date ? ` · ${prettyDate(t.date)}` : ''}

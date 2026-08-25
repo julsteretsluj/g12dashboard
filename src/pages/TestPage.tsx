@@ -4,6 +4,7 @@ import { useWorkspace } from '../lib/useWorkspace'
 import { pct, blankNote, newId, testNotes, type TestItem } from '../lib/workspace'
 import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
+import EmojiPick from '../components/EmojiPick'
 
 const kinds: TestItem['kind'][] = ['quiz', 'test', 'lab', 'project', 'diploma']
 
@@ -39,12 +40,20 @@ export default function TestPage() {
         <Link to={`/class/${id}`}>{course.short}</Link>
         {' / '}
         <Link to={`/class/${id}/unit/${unitId}`}>{unit.name}</Link>
-        <span> / {test.name || 'Test'}</span>
+        <span> / {test.emoji ? `${test.emoji} ` : ''}{test.name || 'Test'}</span>
       </p>
       <header className="page-head">
-        <div>
-          <p className="kicker">{test.kind}</p>
-          <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{test.name || 'Untitled'}</h2>
+        <div className="page-head-title">
+          <EmojiPick
+            value={test.emoji}
+            fallback="📝"
+            onChange={(emoji) => patch({ emoji })}
+            label="Test emoji"
+          />
+          <div>
+            <p className="kicker">{test.kind}</p>
+            <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{test.name || 'Untitled'}</h2>
+          </div>
         </div>
         <Link className="btn ghost" to={`/class/${id}/unit/${unitId}`}>
           Back to unit

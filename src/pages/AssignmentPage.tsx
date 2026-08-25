@@ -4,6 +4,7 @@ import { useWorkspace } from '../lib/useWorkspace'
 import DocShelf from '../components/DocShelf'
 import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
+import EmojiPick from '../components/EmojiPick'
 import { blankNote, newId, taskNotes } from '../lib/workspace'
 
 export default function AssignmentPage() {
@@ -37,12 +38,20 @@ export default function AssignmentPage() {
         <Link to={`/class/${id}`}>{course.short}</Link>
         {' / '}
         <Link to={`/class/${id}/unit/${unitId}`}>{unit.name}</Link>
-        <span> / {task.title || 'Assignment'}</span>
+        <span> / {task.emoji ? `${task.emoji} ` : ''}{task.title || 'Assignment'}</span>
       </p>
       <header className="page-head">
-        <div>
-          <p className="kicker">Assignment</p>
-          <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{task.title || 'Untitled'}</h2>
+        <div className="page-head-title">
+          <EmojiPick
+            value={task.emoji}
+            fallback="📌"
+            onChange={(emoji) => patch({ emoji })}
+            label="Assignment emoji"
+          />
+          <div>
+            <p className="kicker">Assignment</p>
+            <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{task.title || 'Untitled'}</h2>
+          </div>
         </div>
         <Link className="btn ghost" to={`/class/${id}/unit/${unitId}`}>
           Back to unit

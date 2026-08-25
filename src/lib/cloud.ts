@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { defaultTimer, type StudioData } from './studio'
+import { hydrateWorkspace } from './workspace'
 
 export async function loadCloudStudio(uid: string): Promise<StudioData | null> {
   if (!db) return null
@@ -8,8 +9,10 @@ export async function loadCloudStudio(uid: string): Promise<StudioData | null> {
   if (!snap.exists()) return null
   const raw = snap.data() as Partial<StudioData>
   return {
-    todo: raw.todo ?? [],
-    workspaces: raw.workspaces ?? {},
+    todo: (raw.todo ?? []).map((t) => ({ ...t, emoji: t.emoji ?? '' })),
+    workspaces: Object.fromEntries(
+      Object.entries(raw.workspaces ?? {}).map(([id, ws]) => [id, hydrateWorkspace(ws)]),
+    ),
     timer: {
       ...defaultTimer(),
       ...raw.timer,
