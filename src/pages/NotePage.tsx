@@ -4,13 +4,23 @@ import { useWorkspace } from '../lib/useWorkspace'
 import type { NoteItem } from '../lib/workspace'
 
 export default function NotePage() {
-  const { id, unitId, noteId } = useParams()
+  const { id, unitId, taskId, testId, noteId } = useParams()
   const course = classes.find((c) => c.id === id)
   const { ws, update } = useWorkspace(id)
   const nav = useNavigate()
   const note = ws.notes.find((n) => n.id === noteId)
-  const unit = unitId ? ws.units.find((u) => u.id === unitId) : undefined
-  const back = unitId ? `/class/${id}/unit/${unitId}` : `/class/${id}`
+  const unit = (unitId || note?.unitId) ? ws.units.find((u) => u.id === (unitId || note?.unitId)) : undefined
+  const task = (taskId || note?.taskId) ? ws.tasks.find((t) => t.id === (taskId || note?.taskId)) : undefined
+  const test = (testId || note?.testId) ? ws.tests.find((t) => t.id === (testId || note?.testId)) : undefined
+
+  const back = (() => {
+    if (!id) return '/'
+    if (task && unit) return `/class/${id}/unit/${unit.id}/task/${task.id}`
+    if (test && unit) return `/class/${id}/unit/${unit.id}/test/${test.id}`
+    if (task) return `/class/${id}`
+    if (unit) return `/class/${id}/unit/${unit.id}`
+    return `/class/${id}`
+  })()
 
   if (!course || !note || !id) {
     return (
@@ -37,6 +47,19 @@ export default function NotePage() {
           <>
             {' / '}
             <Link to={`/class/${id}/unit/${unit.id}`}>{unit.name}</Link>
+          </>
+        )}
+        {task && unit && (
+          <>
+            {' / '}
+            <Link to={`/class/${id}/unit/${unit.id}/task/${task.id}`}>{task.title || 'Assignment'}</Link>
+          </>
+        )}
+        {task && !unit && <span> / {task.title || 'Task'}</span>}
+        {test && unit && (
+          <>
+            {' / '}
+            <Link to={`/class/${id}/unit/${unit.id}/test/${test.id}`}>{test.name || 'Test'}</Link>
           </>
         )}
         <span> / {current.title || 'Note'}</span>

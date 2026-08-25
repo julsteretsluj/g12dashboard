@@ -1,28 +1,20 @@
-import { initializeApp, type FirebaseApp } from 'firebase/app'
+import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
 
 const config = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string | undefined,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID as string | undefined,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID as string | undefined,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyCkQP8wt0tOpvgva9S1XGXhRezC1LKogHQ',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'g12dashboard.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'g12dashboard',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'g12dashboard.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '650437422668',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:650437422668:web:647792edbbbdd0235f8ee9',
 }
 
-export const firebaseReady = Boolean(
-  config.apiKey && config.authDomain && config.projectId && config.appId,
-)
+export const firebaseReady = true
 
-let app: FirebaseApp | null = null
-let auth: Auth | null = null
-let db: Firestore | null = null
+const app: FirebaseApp = getApps().length ? getApp() : initializeApp(config)
+const auth: Auth = getAuth(app)
+const db: Firestore = getFirestore(app)
 
-if (firebaseReady) {
-  app = initializeApp(config)
-  auth = getAuth(app)
-  db = getFirestore(app)
-}
-
-export { auth, db }
+export { app, auth, db }

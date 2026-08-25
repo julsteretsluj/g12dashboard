@@ -1,8 +1,9 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
-import { newId, pct } from '../lib/workspace'
+import { newId, pct, blankNote, unitNotes } from '../lib/workspace'
 import DateField, { prettyDate } from '../components/DateField'
+import NoteList from '../components/NoteList'
 import { useState, type FormEvent } from 'react'
 
 export default function UnitPage() {
@@ -15,10 +16,9 @@ export default function UnitPage() {
   const [taskDue, setTaskDue] = useState('')
   const [testName, setTestName] = useState('')
   const [testDate, setTestDate] = useState('')
-  const [noteTitle, setNoteTitle] = useState('')
   const tasks = ws.tasks.filter((t) => t.unitId === unitId)
   const tests = ws.tests.filter((t) => t.unitId === unitId)
-  const notes = ws.notes.filter((n) => n.unitId === unitId)
+  const notes = unitNotes(ws.notes, unitId ?? '')
 
   if (!course || !id) {
     return (
@@ -188,35 +188,19 @@ export default function UnitPage() {
 
       <section className="card" style={{ marginTop: 16 }}>
         <h3>Notes</h3>
-        {notes.length === 0 && <p className="meta">No notes in this unit.</p>}
-        <div className="notes-grid">
-          {notes.map((n) => (
-            <Link key={n.id} className="sticky sticky-link" to={`/class/${id}/unit/${unitId}/note/${n.id}`}>
-              <h4>{n.title || 'Untitled'}</h4>
-              <p>{n.body.slice(0, 120) || 'Empty'}</p>
-            </Link>
-          ))}
-        </div>
-        <form
-          className="todo-add"
-          style={{ marginTop: 12 }}
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (!noteTitle.trim() || !unitId) return
+        <NoteList
+          notes={notes}
+          hrefFor={(noteId) => `/class/${id}/unit/${unitId}/note/${noteId}`}
+          onCreate={(title) => {
             const noteId = newId()
             update({
               ...ws,
-              notes: [...ws.notes, { id: noteId, title: noteTitle.trim(), body: '', unitId }],
+              notes: [...ws.notes, blankNote({ id: noteId, title, unitId })],
             })
-            setNoteTitle('')
             nav(`/class/${id}/unit/${unitId}/note/${noteId}`)
           }}
-        >
-          <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} placeholder="New note" />
-          <button className="btn" type="submit">
-            Add
-          </button>
-        </form>
+          empty="No notes in this unit."
+        />
       </section>
 
       <button

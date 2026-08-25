@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { DocItem } from '../lib/workspace'
 import { newId } from '../lib/workspace'
 import { deleteBlob, embedKind, embeddableUrl, getBlob, putBlob } from '../lib/files'
@@ -12,6 +12,8 @@ type Props = {
 export default function DocShelf({ items, onChange, addLabel = 'Add' }: Props) {
   const [linkName, setLinkName] = useState('')
   const [linkUrl, setLinkUrl] = useState('')
+  const [awaitingDoc, setAwaitingDoc] = useState(false)
+  const urlRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState<string | null>(null)
   const [blobUrls, setBlobUrls] = useState<Record<string, string>>({})
 
@@ -55,6 +57,14 @@ export default function DocShelf({ items, onChange, addLabel = 'Add' }: Props) {
     ])
     setLinkName('')
     setLinkUrl('')
+    setAwaitingDoc(false)
+  }
+
+  function startGoogleDoc() {
+    window.open('https://docs.new', '_blank', 'noopener,noreferrer')
+    if (!linkName.trim()) setLinkName('Google Doc')
+    setAwaitingDoc(true)
+    queueMicrotask(() => urlRef.current?.focus())
   }
 
   async function remove(item: DocItem) {
@@ -113,14 +123,23 @@ export default function DocShelf({ items, onChange, addLabel = 'Add' }: Props) {
           placeholder={`${addLabel} link title`}
         />
         <input
+          ref={urlRef}
           value={linkUrl}
           onChange={(e) => setLinkUrl(e.target.value)}
-          placeholder="https://…"
+          placeholder={awaitingDoc ? 'Paste the Google Doc URL' : 'https://…'}
         />
         <button className="btn" type="submit">
           Embed link
         </button>
+        <button className="btn ghost" type="button" onClick={startGoogleDoc}>
+          New Google Doc
+        </button>
       </form>
+      {awaitingDoc && (
+        <p className="meta doc-hint">
+          A blank doc opened in Google. Copy the address from that tab, paste it above, then Embed link.
+        </p>
+      )}
       <label className="file-add">
         Upload a document
         <input

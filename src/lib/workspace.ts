@@ -46,6 +46,8 @@ export type NoteItem = {
   title: string
   body: string
   unitId: string
+  taskId: string
+  testId: string
 }
 
 export type Workspace = {
@@ -81,7 +83,12 @@ export function loadWorkspace(classId: string): Workspace {
     const parsed = JSON.parse(raw) as Partial<Workspace>
     const base = { ...emptyWorkspace(), ...parsed }
     base.tasks = (base.tasks ?? []).map((t) => ({ ...t, unitId: t.unitId ?? '' }))
-    base.notes = (base.notes ?? []).map((n) => ({ ...n, unitId: n.unitId ?? '' }))
+    base.notes = (base.notes ?? []).map((n) => ({
+      ...n,
+      unitId: n.unitId ?? '',
+      taskId: n.taskId ?? '',
+      testId: n.testId ?? '',
+    }))
     return base
   } catch {
     return emptyWorkspace()
@@ -94,6 +101,32 @@ export function saveWorkspace(classId: string, ws: Workspace) {
 
 export function newId() {
   return crypto.randomUUID()
+}
+
+export function classNotes(notes: NoteItem[]) {
+  return notes.filter((n) => !n.unitId && !n.taskId && !n.testId)
+}
+
+export function unitNotes(notes: NoteItem[], unitId: string) {
+  return notes.filter((n) => n.unitId === unitId && !n.taskId && !n.testId)
+}
+
+export function taskNotes(notes: NoteItem[], taskId: string) {
+  return notes.filter((n) => n.taskId === taskId)
+}
+
+export function testNotes(notes: NoteItem[], testId: string) {
+  return notes.filter((n) => n.testId === testId)
+}
+
+export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<NoteItem>): NoteItem {
+  return {
+    body: '',
+    unitId: '',
+    taskId: '',
+    testId: '',
+    ...partial,
+  }
 }
 
 export function pct(score: string, outOf: string) {

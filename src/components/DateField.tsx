@@ -29,6 +29,7 @@ export default function DateField({
 }) {
   const picked = parseIso(value)
   const today = new Date()
+  const [open, setOpen] = useState(false)
   const [view, setView] = useState(() =>
     picked ? { y: picked.y, m: picked.m } : { y: today.getFullYear(), m: today.getMonth() },
   )
@@ -50,50 +51,74 @@ export default function DateField({
   }
 
   return (
-    <div className="date-field">
+    <div className={`date-field ${open ? 'is-open' : ''}`}>
       <div className="date-field-head">
-        <span className="meta">{label}</span>
-        <strong>{picked ? prettyDate(value) : 'No date'}</strong>
+        <button
+          className="date-field-toggle"
+          type="button"
+          aria-expanded={open}
+          onClick={() => {
+            if (!open && picked) setView({ y: picked.y, m: picked.m })
+            setOpen((v) => !v)
+          }}
+        >
+          <span className="meta">{label}</span>
+          <strong>{picked ? prettyDate(value) : 'Pick a date'}</strong>
+        </button>
         {value && (
-          <button className="btn ghost" type="button" onClick={() => onChange('')}>
+          <button
+            className="btn ghost"
+            type="button"
+            onClick={() => {
+              onChange('')
+              setOpen(false)
+            }}
+          >
             Clear
           </button>
         )}
       </div>
-      <div className="date-field-nav">
-        <button className="btn ghost" type="button" onClick={() => shift(-1)} aria-label="Previous month">
-          ‹
-        </button>
-        <span>
-          {months[view.m]} {view.y}
-        </span>
-        <button className="btn ghost" type="button" onClick={() => shift(1)} aria-label="Next month">
-          ›
-        </button>
-      </div>
-      <div className="cal-grid date-cal">
-        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-          <div className="dow" key={i}>
-            {d}
-          </div>
-        ))}
-        {cells.map((d, i) => {
-          if (!d) return <div key={i} className="cal-cell empty-day" />
-          const iso = isoDate(view.y, view.m, d)
-          const isPicked = value === iso
-          const isToday = iso === todayIso
-          return (
-            <button
-              key={i}
-              type="button"
-              className={`cal-cell date-day ${isPicked ? 'picked' : ''} ${isToday ? 'today' : ''}`}
-              onClick={() => onChange(iso)}
-            >
-              {d}
+      {open && (
+        <>
+          <div className="date-field-nav">
+            <button className="btn ghost" type="button" onClick={() => shift(-1)} aria-label="Previous month">
+              ‹
             </button>
-          )
-        })}
-      </div>
+            <span>
+              {months[view.m]} {view.y}
+            </span>
+            <button className="btn ghost" type="button" onClick={() => shift(1)} aria-label="Next month">
+              ›
+            </button>
+          </div>
+          <div className="cal-grid date-cal">
+            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+              <div className="dow" key={i}>
+                {d}
+              </div>
+            ))}
+            {cells.map((d, i) => {
+              if (!d) return <div key={i} className="cal-cell empty-day" />
+              const iso = isoDate(view.y, view.m, d)
+              const isPicked = value === iso
+              const isToday = iso === todayIso
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  className={`cal-cell date-day ${isPicked ? 'picked' : ''} ${isToday ? 'today' : ''}`}
+                  onClick={() => {
+                    onChange(iso)
+                    setOpen(false)
+                  }}
+                >
+                  {d}
+                </button>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }

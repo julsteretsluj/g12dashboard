@@ -78,6 +78,8 @@ export function embeddableUrl(url: string) {
       return `https://www.youtube.com/embed${u.pathname}`
     }
     if (u.hostname.includes('docs.google.com')) {
+      const doc = u.pathname.match(/\/document\/d\/([^/]+)/)
+      if (doc) return `https://docs.google.com/document/d/${doc[1]}/preview`
       if (u.pathname.includes('/edit')) return url.replace(/\/edit.*$/, '/preview')
       if (u.pathname.includes('/view')) return url.replace(/\/view.*$/, '/preview')
     }

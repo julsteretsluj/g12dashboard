@@ -1,8 +1,9 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
-import { pct, type TestItem } from '../lib/workspace'
+import { pct, blankNote, newId, testNotes, type TestItem } from '../lib/workspace'
 import DateField from '../components/DateField'
+import NoteList from '../components/NoteList'
 
 const kinds: TestItem['kind'][] = ['quiz', 'test', 'lab', 'project', 'diploma']
 
@@ -90,12 +91,33 @@ export default function TestPage() {
           />
           <span className="pill">{p != null ? `${p.toFixed(1)}%` : 'No score yet'}</span>
         </div>
+        <h3 style={{ marginTop: 18 }}>Notes</h3>
+        <NoteList
+          notes={testNotes(ws.notes, test.id)}
+          hrefFor={(noteId) => `/class/${id}/unit/${unitId}/test/${test.id}/note/${noteId}`}
+          onCreate={(title) => {
+            const noteId = newId()
+            update({
+              ...ws,
+              notes: [
+                ...ws.notes,
+                blankNote({ id: noteId, title, unitId, testId: test.id }),
+              ],
+            })
+            nav(`/class/${id}/unit/${unitId}/test/${test.id}/note/${noteId}`)
+          }}
+          empty="Notes for this test."
+        />
         <button
           className="btn ghost"
           type="button"
           style={{ marginTop: 16 }}
           onClick={() => {
-            update({ ...ws, tests: ws.tests.filter((t) => t.id !== test.id) })
+            update({
+              ...ws,
+              tests: ws.tests.filter((t) => t.id !== test.id),
+              notes: ws.notes.filter((n) => n.testId !== test.id),
+            })
             nav(`/class/${id}/unit/${unitId}`)
           }}
         >

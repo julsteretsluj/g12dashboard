@@ -2,10 +2,11 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { type FormEvent, useState } from 'react'
 import DocShelf from '../components/DocShelf'
-import { newId, type TaskItem } from '../lib/workspace'
+import { blankNote, classNotes, newId, taskNotes, type TaskItem } from '../lib/workspace'
 import { useWorkspace } from '../lib/useWorkspace'
 import ClassAcademics from '../components/ClassAcademics'
 import DateField from '../components/DateField'
+import NoteList from '../components/NoteList'
 
 export default function ClassPage() {
   const { id } = useParams()
@@ -14,7 +15,6 @@ export default function ClassPage() {
   const nav = useNavigate()
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDue, setTaskDue] = useState('')
-  const [noteTitle, setNoteTitle] = useState('')
 
   if (!course || !id) {
     return (
@@ -88,10 +88,31 @@ export default function ClassPage() {
                 <button
                   className="btn ghost"
                   type="button"
-                  onClick={() => update({ ...ws, tasks: ws.tasks.filter((t) => t.id !== task.id) })}
+                  onClick={() =>
+                    update({
+                      ...ws,
+                      tasks: ws.tasks.filter((t) => t.id !== task.id),
+                      notes: ws.notes.filter((n) => n.taskId !== task.id),
+                    })
+                  }
                 >
                   Delete
                 </button>
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <NoteList
+                  notes={taskNotes(ws.notes, task.id)}
+                  hrefFor={(noteId) => `/class/${id}/task/${task.id}/note/${noteId}`}
+                  onCreate={(title) => {
+                    const noteId = newId()
+                    update({
+                      ...ws,
+                      notes: [...ws.notes, blankNote({ id: noteId, title, taskId: task.id })],
+                    })
+                    nav(`/class/${id}/task/${task.id}/note/${noteId}`)
+                  }}
+                  empty=""
+                />
               </div>
             </article>
           ))}
@@ -114,37 +135,19 @@ export default function ClassPage() {
         </section>
         <section className="card">
           <h3>Notes</h3>
-          {ws.notes.filter((n) => !n.unitId).length === 0 && <p className="meta">Notes are empty.</p>}
-          <div className="notes-grid">
-            {ws.notes
-              .filter((n) => !n.unitId)
-              .map((n) => (
-                <Link key={n.id} className="sticky sticky-link" to={`/class/${id}/note/${n.id}`}>
-                  <h4>{n.title || 'Untitled'}</h4>
-                  <p>{n.body.slice(0, 120) || 'Empty'}</p>
-                </Link>
-              ))}
-          </div>
-          <form
-            className="todo-add"
-            style={{ marginTop: 12 }}
-            onSubmit={(e) => {
-              e.preventDefault()
-              if (!noteTitle.trim()) return
+          <NoteList
+            notes={classNotes(ws.notes)}
+            hrefFor={(noteId) => `/class/${id}/note/${noteId}`}
+            onCreate={(title) => {
               const noteId = newId()
               update({
                 ...ws,
-                notes: [...ws.notes, { id: noteId, title: noteTitle.trim(), body: '', unitId: '' }],
+                notes: [...ws.notes, blankNote({ id: noteId, title })],
               })
-              setNoteTitle('')
               nav(`/class/${id}/note/${noteId}`)
             }}
-          >
-            <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} placeholder="New note" />
-            <button className="btn" type="submit">
-              Add
-            </button>
-          </form>
+            empty="Notes are empty."
+          />
         </section>
       </div>
     </>

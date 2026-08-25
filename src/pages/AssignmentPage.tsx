@@ -3,6 +3,8 @@ import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import DocShelf from '../components/DocShelf'
 import DateField from '../components/DateField'
+import NoteList from '../components/NoteList'
+import { blankNote, newId, taskNotes } from '../lib/workspace'
 
 export default function AssignmentPage() {
   const { id, unitId, taskId } = useParams()
@@ -70,6 +72,23 @@ export default function AssignmentPage() {
           onChange={(e) => patch({ note: e.target.value })}
           style={{ marginTop: 10 }}
         />
+        <h3 style={{ marginTop: 18 }}>Notes</h3>
+        <NoteList
+          notes={taskNotes(ws.notes, task.id)}
+          hrefFor={(noteId) => `/class/${id}/unit/${unitId}/task/${task.id}/note/${noteId}`}
+          onCreate={(title) => {
+            const noteId = newId()
+            update({
+              ...ws,
+              notes: [
+                ...ws.notes,
+                blankNote({ id: noteId, title, unitId, taskId: task.id }),
+              ],
+            })
+            nav(`/class/${id}/unit/${unitId}/task/${task.id}/note/${noteId}`)
+          }}
+          empty="Notes for this assignment."
+        />
         <h3 style={{ marginTop: 18 }}>Documents & embeds</h3>
         <DocShelf
           items={task.attachments}
@@ -87,7 +106,11 @@ export default function AssignmentPage() {
           type="button"
           style={{ marginTop: 16 }}
           onClick={() => {
-            update({ ...ws, tasks: ws.tasks.filter((t) => t.id !== task.id) })
+            update({
+              ...ws,
+              tasks: ws.tasks.filter((t) => t.id !== task.id),
+              notes: ws.notes.filter((n) => n.taskId !== task.id),
+            })
             nav(`/class/${id}/unit/${unitId}`)
           }}
         >

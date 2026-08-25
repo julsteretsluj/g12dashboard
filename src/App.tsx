@@ -69,6 +69,9 @@ export default function App() {
           <Route path="/timetable" element={<TimetablePage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/studio" element={<Studio />} />
+          <Route path="/class/:id/unit/:unitId/task/:taskId/note/:noteId" element={<NotePage />} />
+          <Route path="/class/:id/unit/:unitId/test/:testId/note/:noteId" element={<NotePage />} />
+          <Route path="/class/:id/task/:taskId/note/:noteId" element={<NotePage />} />
           <Route path="/class/:id/unit/:unitId/note/:noteId" element={<NotePage />} />
           <Route path="/class/:id/note/:noteId" element={<NotePage />} />
           <Route path="/class/:id/unit/:unitId/task/:taskId" element={<AssignmentPage />} />
