@@ -60,7 +60,7 @@ export default function ClassAcademics({
         {ws.units.length === 0 && <p className="meta">No units yet.</p>}
         <div className="class-grid" style={{ marginTop: 12 }}>
           {ws.units.map((u) => {
-            const tasks = ws.tasks.filter((t) => t.unitId === u.id).length
+            const tasks = ws.tasks.filter((t) => t.unitId === u.id && !t.parentId).length
             const tests = ws.tests.filter((t) => t.unitId === u.id).length
             return (
               <Link

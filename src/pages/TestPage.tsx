@@ -1,10 +1,13 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import { pct, blankNote, newId, testNotes, type TestItem } from '../lib/workspace'
 import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
 import EmojiPick from '../components/EmojiPick'
+import PracticeDrill from '../components/PracticeDrill'
+import { cloneNeuronPractice } from '../data/practiceNeurons'
 
 const kinds: TestItem['kind'][] = ['quiz', 'test', 'lab', 'project', 'diploma']
 
@@ -16,6 +19,18 @@ export default function TestPage() {
   const unit = ws.units.find((u) => u.id === unitId)
   const test = ws.tests.find((t) => t.id === testId)
   const p = test ? pct(test.score, test.outOf) : null
+
+  useEffect(() => {
+    if (!test) return
+    if ((test.practice?.length ?? 0) > 0) return
+    if (!/neuron|nervous|synapse|action potential/i.test(test.name)) return
+    update({
+      ...ws,
+      tests: ws.tests.map((t) =>
+        t.id === test.id ? { ...t, practice: cloneNeuronPractice(newId) } : t,
+      ),
+    })
+  }, [test?.id, test?.name, test?.practice?.length])
 
   if (!course || !unit || !test || !id || !unitId) {
     return (
@@ -116,6 +131,11 @@ export default function TestPage() {
             nav(`/class/${id}/unit/${unitId}/test/${test.id}/note/${noteId}`)
           }}
           empty="Notes for this test."
+        />
+        <PracticeDrill
+          questions={test.practice ?? []}
+          onGenerate={() => patch({ practice: cloneNeuronPractice(newId) })}
+          onClear={() => patch({ practice: [] })}
         />
         <button
           className="btn ghost"

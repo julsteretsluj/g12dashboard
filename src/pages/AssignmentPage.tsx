@@ -5,7 +5,8 @@ import DocShelf from '../components/DocShelf'
 import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
 import EmojiPick from '../components/EmojiPick'
-import { blankNote, newId, taskNotes } from '../lib/workspace'
+import Subtasks from '../components/Subtasks'
+import { blankNote, blankTask, childTasks, dropTaskTree, newId, taskNotes } from '../lib/workspace'
 
 export default function AssignmentPage() {
   const { id, unitId, taskId } = useParams()
@@ -14,6 +15,8 @@ export default function AssignmentPage() {
   const nav = useNavigate()
   const unit = ws.units.find((u) => u.id === unitId)
   const task = ws.tasks.find((t) => t.id === taskId)
+  const parent = task?.parentId ? ws.tasks.find((t) => t.id === task.parentId) : undefined
+  const steps = task ? childTasks(ws.tasks, task.id) : []
 
   if (!course || !unit || !task || !id || !unitId) {
     return (
@@ -38,7 +41,13 @@ export default function AssignmentPage() {
         <Link to={`/class/${id}`}>{course.short}</Link>
         {' / '}
         <Link to={`/class/${id}/unit/${unitId}`}>{unit.name}</Link>
-        <span> / {task.emoji ? `${task.emoji} ` : ''}{task.title || 'Assignment'}</span>
+        {parent && (
+          <>
+            {' / '}
+            <Link to={`/class/${id}/unit/${unitId}/task/${parent.id}`}>{parent.title || 'Assignment'}</Link>
+          </>
+        )}
+        <span> / {task.emoji ? `${task.emoji} ` : ''}{task.title || (parent ? 'Sub-task' : 'Assignment')}</span>
       </p>
       <header className="page-head">
         <div className="page-head-title">
@@ -49,12 +58,15 @@ export default function AssignmentPage() {
             label="Assignment emoji"
           />
           <div>
-            <p className="kicker">Assignment</p>
+            <p className="kicker">{parent ? 'Sub-task' : 'Assignment'}</p>
             <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{task.title || 'Untitled'}</h2>
           </div>
         </div>
-        <Link className="btn ghost" to={`/class/${id}/unit/${unitId}`}>
-          Back to unit
+        <Link
+          className="btn ghost"
+          to={parent ? `/class/${id}/unit/${unitId}/task/${parent.id}` : `/class/${id}/unit/${unitId}`}
+        >
+          {parent ? 'Back to assignment' : 'Back to unit'}
         </Link>
       </header>
 
@@ -80,6 +92,31 @@ export default function AssignmentPage() {
           value={task.note}
           onChange={(e) => patch({ note: e.target.value })}
           style={{ marginTop: 10 }}
+        />
+        <Subtasks
+          items={steps}
+          hrefFor={(stepId) => `/class/${id}/unit/${unitId}/task/${stepId}`}
+          onAdd={(title, due) =>
+            update({
+              ...ws,
+              tasks: [
+                ...ws.tasks,
+                blankTask({
+                  id: newId(),
+                  title,
+                  due,
+                  unitId,
+                  parentId: task.id,
+                }),
+              ],
+            })
+          }
+          onToggle={(stepId, done) =>
+            update({
+              ...ws,
+              tasks: ws.tasks.map((t) => (t.id === stepId ? { ...t, done } : t)),
+            })
+          }
         />
         <h3 style={{ marginTop: 18 }}>Notes</h3>
         <NoteList
@@ -115,15 +152,12 @@ export default function AssignmentPage() {
           type="button"
           style={{ marginTop: 16 }}
           onClick={() => {
-            update({
-              ...ws,
-              tasks: ws.tasks.filter((t) => t.id !== task.id),
-              notes: ws.notes.filter((n) => n.taskId !== task.id),
-            })
-            nav(`/class/${id}/unit/${unitId}`)
+            const parentId = parent?.id
+            update(dropTaskTree(ws, task.id))
+            nav(parentId ? `/class/${id}/unit/${unitId}/task/${parentId}` : `/class/${id}/unit/${unitId}`)
           }}
         >
-          Delete assignment
+          {parent ? 'Delete sub-task' : 'Delete assignment'}
         </button>
       </section>
     </>

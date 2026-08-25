@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { type FormEvent, useState } from 'react'
 import DocShelf from '../components/DocShelf'
-import { blankNote, classNotes, newId, taskNotes, type TaskItem } from '../lib/workspace'
+import { blankNote, blankTask, classNotes, dropTaskTree, newId, taskNotes, type TaskItem } from '../lib/workspace'
 import { useWorkspace } from '../lib/useWorkspace'
 import ClassAcademics from '../components/ClassAcademics'
 import DateField from '../components/DateField'
@@ -29,17 +29,11 @@ export default function ClassPage() {
   function addTask(e: FormEvent) {
     e.preventDefault()
     if (!taskTitle.trim()) return
-    const task: TaskItem = {
+    const task: TaskItem = blankTask({
       id: newId(),
       title: taskTitle.trim(),
       due: taskDue.trim(),
-      note: '',
-      done: false,
-      unitId: '',
-      attachments: [],
-      submissions: [],
-      emoji: '',
-    }
+    })
     update({ ...ws, tasks: [...ws.tasks, task] })
     setTaskTitle('')
     setTaskDue('')
@@ -52,7 +46,7 @@ export default function ClassPage() {
     })
   }
 
-  const loose = ws.tasks.filter((t) => !t.unitId)
+  const loose = ws.tasks.filter((t) => !t.unitId && !t.parentId)
 
   return (
     <>
@@ -109,11 +103,7 @@ export default function ClassPage() {
                   className="btn ghost"
                   type="button"
                   onClick={() =>
-                    update({
-                      ...ws,
-                      tasks: ws.tasks.filter((t) => t.id !== task.id),
-                      notes: ws.notes.filter((n) => n.taskId !== task.id),
-                    })
+                    update(dropTaskTree(ws, task.id))
                   }
                 >
                   Delete

@@ -40,7 +40,11 @@ export function comingFromWorkspaces(workspaces: Record<string, Workspace>, now 
       items.push({
         key: `task-${course.id}-${task.id}`,
         kind: 'task',
-        title: task.title || 'Untitled assignment',
+        title: (() => {
+          const parent = task.parentId ? ws.tasks.find((t) => t.id === task.parentId) : undefined
+          const name = task.title || 'Untitled assignment'
+          return parent?.title ? `${parent.title} · ${name}` : name
+        })(),
         date: task.due,
         href,
         classId: course.id,

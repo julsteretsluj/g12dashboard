@@ -1,3 +1,5 @@
+import type { PracticeQ } from '../data/practiceNeurons'
+
 export type DocItem = {
   id: string
   name: string
@@ -14,6 +16,7 @@ export type TaskItem = {
   note: string
   done: boolean
   unitId: string
+  parentId: string
   emoji: string
   attachments: DocItem[]
   submissions: DocItem[]
@@ -36,6 +39,7 @@ export type TestItem = {
   outOf: string
   unitId: string
   emoji: string
+  practice: PracticeQ[]
 }
 
 export type ReviewItem = {
@@ -85,9 +89,16 @@ export const emptyWorkspace = (): Workspace => ({
 
 export function hydrateWorkspace(parsed: Partial<Workspace>): Workspace {
   const base = { ...emptyWorkspace(), ...parsed }
-  base.tasks = (base.tasks ?? []).map((t) => ({ ...t, unitId: t.unitId ?? '', emoji: t.emoji ?? '' }))
+  base.tasks = (base.tasks ?? []).map((t) => ({
+    ...t,
+    unitId: t.unitId ?? '',
+    parentId: t.parentId ?? '',
+    emoji: t.emoji ?? '',
+    attachments: t.attachments ?? [],
+    submissions: t.submissions ?? [],
+  }))
   base.units = (base.units ?? []).map((u) => ({ ...u, emoji: u.emoji ?? '' }))
-  base.tests = (base.tests ?? []).map((t) => ({ ...t, emoji: t.emoji ?? '' }))
+  base.tests = (base.tests ?? []).map((t) => ({ ...t, emoji: t.emoji ?? '', practice: t.practice ?? [] }))
   base.reviews = (base.reviews ?? []).map((r) => ({ ...r, emoji: r.emoji ?? '' }))
   base.notes = (base.notes ?? []).map((n) => ({
     ...n,
@@ -132,6 +143,48 @@ export function taskNotes(notes: NoteItem[], taskId: string) {
 
 export function testNotes(notes: NoteItem[], testId: string) {
   return notes.filter((n) => n.testId === testId)
+}
+
+export function blankTask(partial: Pick<TaskItem, 'id' | 'title'> & Partial<TaskItem>): TaskItem {
+  return {
+    due: '',
+    note: '',
+    done: false,
+    unitId: '',
+    parentId: '',
+    emoji: '',
+    attachments: [],
+    submissions: [],
+    ...partial,
+  }
+}
+
+export function childTasks(tasks: TaskItem[], parentId: string) {
+  return tasks.filter((t) => t.parentId === parentId)
+}
+
+export function taskSubtreeIds(tasks: TaskItem[], rootId: string) {
+  const ids = new Set([rootId])
+  let grew = true
+  while (grew) {
+    grew = false
+    for (const t of tasks) {
+      if (t.parentId && ids.has(t.parentId) && !ids.has(t.id)) {
+        ids.add(t.id)
+        grew = true
+      }
+    }
+  }
+  return ids
+}
+
+export function dropTaskTree(ws: Workspace, rootId: string): Workspace {
+  const ids = taskSubtreeIds(ws.tasks, rootId)
+  return {
+    ...ws,
+    tasks: ws.tasks.filter((t) => !ids.has(t.id)),
+    notes: ws.notes.filter((n) => !ids.has(n.taskId)),
+  }
 }
 
 export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<NoteItem>): NoteItem {

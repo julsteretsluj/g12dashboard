@@ -1,7 +1,8 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
-import { newId, pct, blankNote, unitNotes } from '../lib/workspace'
+import { newId, pct, blankNote, blankTask, childTasks, unitNotes } from '../lib/workspace'
+import { cloneNeuronPractice } from '../data/practiceNeurons'
 import DateField, { prettyDate } from '../components/DateField'
 import NoteList from '../components/NoteList'
 import EmojiPick from '../components/EmojiPick'
@@ -17,7 +18,7 @@ export default function UnitPage() {
   const [taskDue, setTaskDue] = useState('')
   const [testName, setTestName] = useState('')
   const [testDate, setTestDate] = useState('')
-  const tasks = ws.tasks.filter((t) => t.unitId === unitId)
+  const tasks = ws.tasks.filter((t) => t.unitId === unitId && !t.parentId)
   const tests = ws.tests.filter((t) => t.unitId === unitId)
   const notes = unitNotes(ws.notes, unitId ?? '')
 
@@ -44,17 +45,12 @@ export default function UnitPage() {
       ...ws,
       tasks: [
         ...ws.tasks,
-        {
+        blankTask({
           id: taskId,
           title: taskTitle.trim(),
           due: taskDue,
-          note: '',
-          done: false,
           unitId,
-          attachments: [],
-          submissions: [],
-          emoji: '',
-        },
+        }),
       ],
     })
     setTaskTitle('')
@@ -79,6 +75,9 @@ export default function UnitPage() {
           outOf: '100',
           unitId,
           emoji: '',
+          practice: /neuron|nervous|synapse|action potential/i.test(testName)
+            ? cloneNeuronPractice(newId)
+            : [],
         },
       ],
     })
@@ -158,15 +157,22 @@ export default function UnitPage() {
         <section className="card">
           <h3>Assignments</h3>
           {tasks.length === 0 && <p className="meta">None yet.</p>}
-          {tasks.map((t) => (
-            <Link key={t.id} className="class-tile" to={`/class/${id}/unit/${unitId}/task/${t.id}`} style={{ marginBottom: 8 }}>
-              <h4>
-                {t.emoji ? `${t.emoji} ` : ''}
-                {t.title || 'Untitled'}
-              </h4>
-              <p>{t.done ? 'Settled' : t.due ? `Due ${prettyDate(t.due)}` : 'Open'}</p>
-            </Link>
-          ))}
+          {tasks.map((t) => {
+            const steps = childTasks(ws.tasks, t.id)
+            const settled = steps.filter((s) => s.done).length
+            return (
+              <Link key={t.id} className="class-tile" to={`/class/${id}/unit/${unitId}/task/${t.id}`} style={{ marginBottom: 8 }}>
+                <h4>
+                  {t.emoji ? `${t.emoji} ` : ''}
+                  {t.title || 'Untitled'}
+                </h4>
+                <p>
+                  {t.done ? 'Settled' : t.due ? `Due ${prettyDate(t.due)}` : 'Open'}
+                  {steps.length ? ` · ${settled}/${steps.length} sub-tasks` : ''}
+                </p>
+              </Link>
+            )
+          })}
           <form onSubmit={addTask} style={{ marginTop: 12 }}>
             <div className="todo-add">
               <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New assignment" />

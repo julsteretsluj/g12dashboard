@@ -12,6 +12,7 @@ export default function NotePage() {
   const note = ws.notes.find((n) => n.id === noteId)
   const unit = (unitId || note?.unitId) ? ws.units.find((u) => u.id === (unitId || note?.unitId)) : undefined
   const task = (taskId || note?.taskId) ? ws.tasks.find((t) => t.id === (taskId || note?.taskId)) : undefined
+  const parentTask = task?.parentId ? ws.tasks.find((t) => t.id === task.parentId) : undefined
   const test = (testId || note?.testId) ? ws.tests.find((t) => t.id === (testId || note?.testId)) : undefined
 
   const back = (() => {
@@ -48,6 +49,12 @@ export default function NotePage() {
           <>
             {' / '}
             <Link to={`/class/${id}/unit/${unit.id}`}>{unit.name}</Link>
+          </>
+        )}
+        {parentTask && unit && (
+          <>
+            {' / '}
+            <Link to={`/class/${id}/unit/${unit.id}/task/${parentTask.id}`}>{parentTask.title || 'Assignment'}</Link>
           </>
         )}
         {task && unit && (

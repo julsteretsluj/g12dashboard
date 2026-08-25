@@ -1156,6 +1156,40 @@ select.note-box {
   font-size: 13px;
 }
 
+.subtask-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #f2f2f7;
+  border-radius: 12px;
+}
+
+.subtask-row a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.subtask-row a strong {
+  font-size: 14px;
+  font-weight: 590;
+  letter-spacing: -0.02em;
+}
+
+.subtask-row a span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.subtask-row a:hover strong {
+  color: var(--red);
+}
+
 .doc-card {
   border-top: 1px solid var(--line);
   padding: 10px 0;
@@ -1198,10 +1232,63 @@ select.note-box {
   color: var(--muted);
 }
 
-.due {
-  font-size: 11px;
-  color: var(--red);
+.practice {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.practice h3 {
+  margin: 0 0 4px;
+}
+
+.practice-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.practice-q {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px 12px;
+  margin: 0 0 10px;
+  background: #fafafa;
+}
+
+.practice-q legend {
   font-weight: 650;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  padding: 0 4px;
+}
+
+.practice-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.practice-q.is-good {
+  border-color: rgba(92, 158, 61, 0.45);
+  background: #f4faf0;
+}
+
+.practice-q.is-miss {
+  border-color: rgba(192, 41, 45, 0.35);
+  background: #fff7f7;
+}
+
+.practice-why {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .embed {
