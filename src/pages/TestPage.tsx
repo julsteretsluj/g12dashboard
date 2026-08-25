@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import { pct, type TestItem } from '../lib/workspace'
+import DateField from '../components/DateField'
 
 const kinds: TestItem['kind'][] = ['quiz', 'test', 'lab', 'project', 'diploma']
 
@@ -70,14 +71,8 @@ export default function TestPage() {
             ))}
           </select>
         </div>
+        <DateField label="Test date" value={test.date} onChange={(date) => patch({ date })} />
         <div className="todo-add" style={{ marginTop: 10 }}>
-          <input
-            className="note-box"
-            value={test.date}
-            onChange={(e) => patch({ date: e.target.value })}
-            placeholder="Date"
-            style={{ maxWidth: 160 }}
-          />
           <input
             className="note-box"
             value={test.score}

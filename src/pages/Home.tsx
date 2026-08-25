@@ -7,6 +7,7 @@ import Weather from '../components/Weather'
 import { classes, funFacts } from '../data/school'
 import { Link } from 'react-router-dom'
 import { useMemo, useState } from 'react'
+import DeskPet from '../components/DeskPet'
 
 export default function Home() {
   const fact = useMemo(() => funFacts[new Date().getDate() % funFacts.length], [])
@@ -29,7 +30,7 @@ export default function Home() {
       <div className="bento">
         <section className="card wide span-8">
           <h3>
-            <span className="hand">Right now </span> · campus clock
+            <span className="hand">Right now </span> · Flix flip clock
           </h3>
           <Clock />
         </section>
@@ -77,16 +78,9 @@ export default function Home() {
             {mood ? 'Noted. No grade for feelings.' : 'Tap a face. We will not tell Advisory.'}
           </p>
         </section>
-        <section className="card span-7">
-          <h3>Lo-fi for Lab 2</h3>
-          <iframe
-            className="embed audio"
-            title="Study playlist"
-            src="https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4xfNRSN?utm_source=generator&theme=0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          />
-        </section>
+        <div className="span-7">
+          <DeskPet />
+        </div>
 
         <section className="span-12">
           <h3 className="hand" style={{ marginBottom: 10 }}>

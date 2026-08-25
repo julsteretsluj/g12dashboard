@@ -1,19 +1,13 @@
-import { useEffect, useState } from 'react'
-import { loadWorkspace, saveWorkspace, type Workspace } from './workspace'
+import { useAuth, workspaceOf } from './AuthContext'
+import { emptyWorkspace, type Workspace } from './workspace'
 
 export function useWorkspace(classId?: string) {
-  const [ws, setWs] = useState<Workspace>(() => loadWorkspace(classId ?? ''))
-
-  useEffect(() => {
-    if (!classId) return
-    localStorage.removeItem(`cis-notes-${classId}`)
-    setWs(loadWorkspace(classId))
-  }, [classId])
+  const { studio, patchWorkspace } = useAuth()
+  const ws = classId ? workspaceOf(studio, classId) : emptyWorkspace()
 
   function update(next: Workspace) {
     if (!classId) return
-    setWs(next)
-    saveWorkspace(classId, next)
+    patchWorkspace(classId, next)
   }
 
   return { ws, update }

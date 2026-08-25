@@ -61,7 +61,7 @@ export type Workspace = {
   diplomaOutOf: string
 }
 
-const empty = (): Workspace => ({
+export const emptyWorkspace = (): Workspace => ({
   notes: [],
   library: [],
   tasks: [],
@@ -76,15 +76,15 @@ const empty = (): Workspace => ({
 
 export function loadWorkspace(classId: string): Workspace {
   const raw = localStorage.getItem(`cis-ws-${classId}`)
-  if (!raw) return empty()
+  if (!raw) return emptyWorkspace()
   try {
     const parsed = JSON.parse(raw) as Partial<Workspace>
-    const base = { ...empty(), ...parsed }
+    const base = { ...emptyWorkspace(), ...parsed }
     base.tasks = (base.tasks ?? []).map((t) => ({ ...t, unitId: t.unitId ?? '' }))
     base.notes = (base.notes ?? []).map((n) => ({ ...n, unitId: n.unitId ?? '' }))
     return base
   } catch {
-    return empty()
+    return emptyWorkspace()
   }
 }
 

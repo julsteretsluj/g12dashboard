@@ -5,6 +5,7 @@ import DocShelf from '../components/DocShelf'
 import { newId, type TaskItem } from '../lib/workspace'
 import { useWorkspace } from '../lib/useWorkspace'
 import ClassAcademics from '../components/ClassAcademics'
+import DateField from '../components/DateField'
 
 export default function ClassPage() {
   const { id } = useParams()
@@ -94,17 +95,14 @@ export default function ClassPage() {
               </div>
             </article>
           ))}
-          <form className="todo-add" onSubmit={addTask} style={{ marginTop: 12 }}>
-            <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New task" />
-            <input
-              value={taskDue}
-              onChange={(e) => setTaskDue(e.target.value)}
-              placeholder="Due"
-              style={{ maxWidth: 140 }}
-            />
-            <button className="btn" type="submit">
-              Add
-            </button>
+          <form onSubmit={addTask} style={{ marginTop: 12 }}>
+            <div className="todo-add">
+              <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New task" />
+              <button className="btn" type="submit">
+                Add
+              </button>
+            </div>
+            <DateField label="Due" value={taskDue} onChange={setTaskDue} />
           </form>
         </section>
       )}

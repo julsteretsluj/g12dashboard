@@ -1,4 +1,4 @@
-import { NavLink, Route, Routes } from 'react-router-dom'
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import ClassPage from './pages/ClassPage'
 import UnitPage from './pages/UnitPage'
@@ -9,8 +9,13 @@ import TimetablePage from './pages/TimetablePage'
 import CalendarPage from './pages/CalendarPage'
 import Studio from './pages/Studio'
 import { classes } from './data/school'
+import AccountBar from './components/AccountBar'
+import DeskPet from './components/DeskPet'
 
 export default function App() {
+  const { pathname } = useLocation()
+  const showBuddy = pathname !== '/'
+
   return (
     <>
       <div className="leaves" aria-hidden>
@@ -52,6 +57,7 @@ export default function App() {
             </NavLink>
           ))}
         </nav>
+        <AccountBar />
         <div className="side-note">
           <strong>Bears, quietly.</strong>
           A student desk for CIS — maple leaf, Mekong light, and the next bell.
@@ -70,6 +76,11 @@ export default function App() {
           <Route path="/class/:id/unit/:unitId" element={<UnitPage />} />
           <Route path="/class/:id" element={<ClassPage />} />
         </Routes>
+        {showBuddy && (
+          <div className="pip-float">
+            <DeskPet compact />
+          </div>
+        )}
       </main>
       </div>
     </>

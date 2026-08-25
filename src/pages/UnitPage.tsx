@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import { newId, pct } from '../lib/workspace'
+import DateField, { prettyDate } from '../components/DateField'
 import { useState, type FormEvent } from 'react'
 
 export default function UnitPage() {
@@ -11,7 +12,9 @@ export default function UnitPage() {
   const nav = useNavigate()
   const unit = ws.units.find((u) => u.id === unitId)
   const [taskTitle, setTaskTitle] = useState('')
+  const [taskDue, setTaskDue] = useState('')
   const [testName, setTestName] = useState('')
+  const [testDate, setTestDate] = useState('')
   const [noteTitle, setNoteTitle] = useState('')
   const tasks = ws.tasks.filter((t) => t.unitId === unitId)
   const tests = ws.tests.filter((t) => t.unitId === unitId)
@@ -43,7 +46,7 @@ export default function UnitPage() {
         {
           id: taskId,
           title: taskTitle.trim(),
-          due: '',
+          due: taskDue,
           note: '',
           done: false,
           unitId,
@@ -53,6 +56,7 @@ export default function UnitPage() {
       ],
     })
     setTaskTitle('')
+    setTaskDue('')
     nav(`/class/${id}/unit/${unitId}/task/${taskId}`)
   }
 
@@ -68,7 +72,7 @@ export default function UnitPage() {
           id: testId,
           name: testName.trim(),
           kind: 'test',
-          date: '',
+          date: testDate,
           score: '',
           outOf: '100',
           unitId,
@@ -76,6 +80,7 @@ export default function UnitPage() {
       ],
     })
     setTestName('')
+    setTestDate('')
     nav(`/class/${id}/unit/${unitId}/test/${testId}`)
   }
 
@@ -135,14 +140,17 @@ export default function UnitPage() {
           {tasks.map((t) => (
             <Link key={t.id} className="class-tile" to={`/class/${id}/unit/${unitId}/task/${t.id}`} style={{ marginBottom: 8 }}>
               <h4>{t.title || 'Untitled'}</h4>
-              <p>{t.done ? 'Settled' : t.due ? `Due ${t.due}` : 'Open'}</p>
+              <p>{t.done ? 'Settled' : t.due ? `Due ${prettyDate(t.due)}` : 'Open'}</p>
             </Link>
           ))}
-          <form className="todo-add" onSubmit={addTask} style={{ marginTop: 12 }}>
-            <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New assignment" />
-            <button className="btn" type="submit">
-              Add
-            </button>
+          <form onSubmit={addTask} style={{ marginTop: 12 }}>
+            <div className="todo-add">
+              <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New assignment" />
+              <button className="btn" type="submit">
+                Add
+              </button>
+            </div>
+            <DateField label="Due" value={taskDue} onChange={setTaskDue} />
           </form>
         </section>
         <section className="card">
@@ -155,17 +163,20 @@ export default function UnitPage() {
                 <h4>{t.name || 'Untitled'}</h4>
                 <p>
                   {t.kind}
-                  {t.date ? ` · ${t.date}` : ''}
+                  {t.date ? ` · ${prettyDate(t.date)}` : ''}
                   {p != null ? ` · ${p.toFixed(0)}%` : ''}
                 </p>
               </Link>
             )
           })}
-          <form className="todo-add" onSubmit={addTest} style={{ marginTop: 12 }}>
-            <input value={testName} onChange={(e) => setTestName(e.target.value)} placeholder="New test or quiz" />
-            <button className="btn" type="submit">
-              Add
-            </button>
+          <form onSubmit={addTest} style={{ marginTop: 12 }}>
+            <div className="todo-add">
+              <input value={testName} onChange={(e) => setTestName(e.target.value)} placeholder="New test or quiz" />
+              <button className="btn" type="submit">
+                Add
+              </button>
+            </div>
+            <DateField label="Test date" value={testDate} onChange={setTestDate} />
           </form>
         </section>
       </div>

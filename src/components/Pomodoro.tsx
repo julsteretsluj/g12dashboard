@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { FlipBoard } from './FlipBoard'
 
 export default function Pomodoro() {
   const [seconds, setSeconds] = useState(25 * 60)
@@ -17,9 +18,7 @@ export default function Pomodoro() {
     <div className="pomodoro">
       <div>
         <div className="hand">Focus maple</div>
-        <div className="pomo-time">
-          {m}:{s}
-        </div>
+        <FlipBoard value={`${m}:${s}`} size="sm" />
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <button className="btn" type="button" onClick={() => setRun((v) => !v)}>

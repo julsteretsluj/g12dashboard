@@ -2,6 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
 import DocShelf from '../components/DocShelf'
+import DateField from '../components/DateField'
 
 export default function AssignmentPage() {
   const { id, unitId, taskId } = useParams()
@@ -59,14 +60,8 @@ export default function AssignmentPage() {
             onChange={(e) => patch({ title: e.target.value })}
             placeholder="Title"
           />
-          <input
-            className="note-box"
-            value={task.due}
-            onChange={(e) => patch({ due: e.target.value })}
-            placeholder="Due"
-            style={{ maxWidth: 140 }}
-          />
         </div>
+        <DateField label="Due" value={task.due} onChange={(due) => patch({ due })} />
         <textarea
           className="note-box"
           rows={4}

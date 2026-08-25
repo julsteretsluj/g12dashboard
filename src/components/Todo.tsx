@@ -1,20 +1,17 @@
-import { useEffect, useState } from 'react'
-
-type Item = { id: string; text: string; done: boolean }
+import { useState } from 'react'
+import { useAuth } from '../lib/AuthContext'
 
 export default function Todo() {
-  const [items, setItems] = useState<Item[]>(() => {
-    const raw = localStorage.getItem('cis-todo-v2')
-    return raw ? JSON.parse(raw) : []
-  })
+  const { studio, patchTodo } = useAuth()
+  const items = studio.todo
   const [text, setText] = useState('')
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
 
-  useEffect(() => {
-    localStorage.removeItem('cis-todo')
-    localStorage.setItem('cis-todo-v2', JSON.stringify(items))
-  }, [items])
+  function setItems(updater: typeof items | ((xs: typeof items) => typeof items)) {
+    const next = typeof updater === 'function' ? updater(items) : updater
+    patchTodo(next)
+  }
 
   return (
     <div>

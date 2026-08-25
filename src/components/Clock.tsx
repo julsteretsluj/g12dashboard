@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { FlipBoard, PixelLcd } from './FlipBoard'
 
 export default function Clock() {
   const [now, setNow] = useState(() => new Date())
@@ -43,30 +44,21 @@ export default function Clock() {
     [now],
   )
 
-  const parts = useMemo(() => {
-    const t = new Date(
-      now.toLocaleString('en-US', { timeZone: 'Asia/Phnom_Penh' }),
-    )
-    return { h: t.getHours(), m: t.getMinutes(), s: t.getSeconds() }
-  }, [now])
-
-  const hDeg = ((parts.h % 12) / 12) * 360 + (parts.m / 60) * 30
-  const mDeg = (parts.m / 60) * 360 + (parts.s / 60) * 6
-  const sDeg = (parts.s / 60) * 360
+  const [hhmm, ss] = [phnom.slice(0, 5), phnom.slice(6)]
 
   return (
-    <div className="clock-block">
-      <div className="analog" aria-hidden>
-        <div className="hand-line hour" style={{ transform: `rotate(${hDeg}deg)` }} />
-        <div className="hand-line minute" style={{ transform: `rotate(${mDeg}deg)` }} />
-        <div className="hand-line second" style={{ transform: `rotate(${sDeg}deg)` }} />
-        <div className="dot" />
+    <div className="flix-wrap">
+      <div className="flix-case">
+        <p className="flix-label">Phnom Penh</p>
+        <div className="flix-row">
+          <FlipBoard value={hhmm} />
+          <PixelLcd value={ss} />
+        </div>
       </div>
-      <div className="digital">
-        <div className="time">{phnom}</div>
+      <div className="flix-meta">
         <div className="date">{date}</div>
         <div className="tz">
-          <span className="pill">Phnom Penh</span>
+          <span className="pill">Campus time</span>
           <span className="pill">Alberta {calgary}</span>
         </div>
       </div>
