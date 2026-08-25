@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FlipBoard, PixelLcd } from './FlipBoard'
+import NextBell from './NextBell'
 
 export default function Clock() {
   const [now, setNow] = useState(() => new Date())
@@ -61,6 +62,7 @@ export default function Clock() {
           <span className="pill">Campus time</span>
           <span className="pill">Alberta {calgary}</span>
         </div>
+        <NextBell now={now} />
       </div>
     </div>
   )

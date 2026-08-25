@@ -554,6 +554,40 @@ textarea {
   font-size: 13px;
 }
 
+.next-bell {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.next-bell .meta {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.next-bell strong,
+.next-bell a {
+  display: inline-block;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.next-bell a:hover {
+  color: var(--red);
+}
+
+.next-bell p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.next-bell-empty {
+  margin-top: 12px;
+}
+
 .analog {
   width: 132px;
   height: 132px;

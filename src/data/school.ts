@@ -97,8 +97,12 @@ export function phnomClock(now = new Date()) {
     new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Asia/Phnom_Penh',
       weekday: 'short',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
       hour12: false,
     })
       .formatToParts(now)
@@ -106,6 +110,12 @@ export function phnomClock(now = new Date()) {
   )
   return {
     weekday: parts.weekday ?? '',
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    hour: Number(parts.hour),
+    minute: Number(parts.minute),
+    second: Number(parts.second),
     minutes: Number(parts.hour) * 60 + Number(parts.minute),
   }
 }
@@ -119,6 +129,67 @@ export function activePeriod(now = new Date()): number | null {
   const { minutes } = phnomClock(now)
   const i = bells.findIndex((b) => minutes >= minutesFromLabel(b.start) && minutes < minutesFromLabel(b.end))
   return i >= 0 ? i : null
+}
+
+const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
+
+function pad2(n: number) {
+  return String(n).padStart(2, '0')
+}
+
+function civilAddDays(year: number, month: number, day: number, extra: number) {
+  const dt = new Date(Date.UTC(year, month - 1, day + extra))
+  return {
+    year: dt.getUTCFullYear(),
+    month: dt.getUTCMonth() + 1,
+    day: dt.getUTCDate(),
+    weekday: weekdayNames[dt.getUTCDay()],
+  }
+}
+
+export type UpcomingBell = {
+  day: (typeof days)[number]
+  period: number
+  start: string
+  end: string
+  cell: string
+  startsAt: number
+}
+
+export function upcomingBell(now = new Date()): UpcomingBell | null {
+  const stamp = phnomClock(now)
+  const nowSec = stamp.hour * 3600 + stamp.minute * 60 + stamp.second
+  for (let offset = 0; offset <= 8; offset++) {
+    const cal = civilAddDays(stamp.year, stamp.month, stamp.day, offset)
+    if (!(days as readonly string[]).includes(cal.weekday)) continue
+    const day = cal.weekday as (typeof days)[number]
+    for (let i = 0; i < bells.length; i++) {
+      const cell = timetableCell(day, i)
+      if (!cell) continue
+      const startSec = minutesFromLabel(bells[i].start) * 60
+      if (offset === 0 && startSec <= nowSec) continue
+      return {
+        day,
+        period: i,
+        start: bells[i].start,
+        end: bells[i].end,
+        cell,
+        startsAt: Date.parse(
+          `${cal.year}-${pad2(cal.month)}-${pad2(cal.day)}T${bells[i].start}:00+07:00`,
+        ),
+      }
+    }
+  }
+  return null
+}
+
+export function formatCountdown(ms: number) {
+  const s = Math.max(0, Math.floor(ms / 1000))
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = s % 60
+  if (h > 0) return `${h}:${pad2(m)}:${pad2(sec)}`
+  return `${m}:${pad2(sec)}`
 }
 
 export const events = [
