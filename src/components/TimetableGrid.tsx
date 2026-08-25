@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { bells, classes, days, timetableCell } from '../data/school'
+import { bells, classes, dayCycle, days, timetableCell } from '../data/school'
 
 export default function TimetableGrid() {
   return (
@@ -8,8 +8,11 @@ export default function TimetableGrid() {
         <thead>
           <tr>
             <th>Bell</th>
-            {days.map((d) => (
-              <th key={d}>{d}</th>
+            {days.map((d, i) => (
+              <th key={d}>
+                {d}
+                <div className="meta">{dayCycle[i]}</div>
+              </th>
             ))}
           </tr>
         </thead>
@@ -33,7 +36,12 @@ export default function TimetableGrid() {
                   )
                 }
                 const c = classes.find((x) => x.id === id)
-                if (!c) return <td key={d}><span className="cell empty">Study / flex</span></td>
+                if (!c)
+                  return (
+                    <td key={d}>
+                      <span className="cell empty">No class</span>
+                    </td>
+                  )
                 return (
                   <td key={d}>
                     <Link className="cell" style={{ background: c.color }} to={`/class/${c.id}`}>

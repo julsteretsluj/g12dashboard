@@ -3,12 +3,12 @@ import TimetableGrid from '../components/TimetableGrid'
 export default function TimetablePage() {
   return (
     <>
-      <p className="kicker">Koh Pich bells</p>
+      <p className="kicker">Week 35 · Semester 1 · MH cycle</p>
       <h2 style={{ marginTop: 0, fontSize: 36, letterSpacing: '-0.04em' }}>Timetable</h2>
-      <p className="lede" style={{ color: 'var(--muted)', maxWidth: '52ch' }}>
-        This is the whole load: homeroom, Bio 30 in 504 until 9:50, Social 30-1
-        (208), lunch 11:25–12:10, CTS in the makerspace, Visual Arts in 310.
-        Monday order is fixed; other days rotate the same four courses.
+      <p className="lede" style={{ color: 'var(--muted)', maxWidth: '56ch' }}>
+        From Jules’s school timetable. Homeroom 8:00–8:30, Bio with Brost,
+        Social with Biggar, lunch, CTS with Cooper on Days 1 and 4 only, Art
+        with Maloney until 15:00. Mon–Fri maps to Days 1–5 this week.
       </p>
       <section className="card wide" style={{ marginTop: 20 }}>
         <TimetableGrid />

@@ -79,7 +79,7 @@ export default function ClassPage() {
         </Link>
       </header>
 
-      <ClassAcademics ws={ws} update={update} />
+      {course.id !== 'homeroom' && <ClassAcademics ws={ws} update={update} />}
 
       <section className="card" style={{ marginBottom: 16 }}>
         <h3>Tasks</h3>

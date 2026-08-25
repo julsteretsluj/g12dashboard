@@ -12,74 +12,75 @@ export type ClassInfo = {
 export const classes: ClassInfo[] = [
   {
     id: 'homeroom',
-    name: 'Homeroom',
+    name: 'Career and Transitions',
     short: 'Homeroom',
-    teacher: 'Advisory',
-    room: 'Advisory',
+    teacher: 'Kirsten Movold · Tess Maloney',
+    room: '219 / 310',
     color: '#C0292D',
     emoji: '🐻',
-    blurb: 'Attendance, announcements, and the quiet start before 504.',
+    blurb: 'Homeroom 08:00–08:30 — Career and Transitions with Movold (MH 219) and Maloney (MH 310).',
   },
   {
     id: 'bio',
     name: 'Biology 30',
     short: 'Bio 30',
-    teacher: 'Science',
+    teacher: 'Jacquie Brost',
     room: '504',
     color: '#5C9E3D',
     emoji: '🧬',
-    blurb: 'Alberta Bio 30 — cells, energy, genetics, and the lab in room 504.',
+    blurb: 'Block 1 with Ms. Brost in MH 504.',
   },
   {
     id: 'social',
     name: 'Social Studies 30-1',
     short: 'Social 30-1',
-    teacher: 'Humanities',
+    teacher: 'Andrew Biggar',
     room: '208',
     color: '#FF8D3D',
     emoji: '🗺️',
-    blurb: 'Ideology, liberalism, and the source analysis that lives on diploma day.',
+    blurb: 'Block 2 with Mr. Biggar in MH 208.',
   },
   {
     id: 'cts',
-    name: 'CTS',
-    short: 'CTS',
-    teacher: 'Makerspace',
+    name: 'CTS 30',
+    short: 'CTS 30',
+    teacher: 'Jackson Cooper',
     room: 'Makerspace',
     color: '#0C4160',
     emoji: '🛠️',
-    blurb: 'Career and Technology Studies — build it, print it, debug it, then name it.',
+    blurb: 'Block 3 with Mr. Cooper in the MH makerspace — Days 1 and 4 only.',
   },
   {
     id: 'art',
-    name: 'Visual Arts',
-    short: 'Visual Arts',
-    teacher: 'Studio',
+    name: 'Visual Art / Art 30',
+    short: 'Art 30',
+    teacher: 'Tess Maloney',
     room: '310',
     color: '#C0292D',
     emoji: '🎨',
-    blurb: 'Room 310 — process, critique, and the courage to leave a canvas messy.',
+    blurb: 'Block 4 with Ms. Maloney in MH 310.',
   },
 ]
 
 export const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] as const
+export const dayCycle = ['D1', 'D2', 'D3', 'D4', 'D5'] as const
 
-/** Homeroom, then 95-min blocks so Bio 30 lands 08:15–09:50. Lunch stays 11:25–12:10. */
+/** Official MH bells from Jules’s Week 35 timetable (S1). */
 export const bells = [
-  { start: '07:50', end: '08:10' },
-  { start: '08:15', end: '09:50' },
-  { start: '09:55', end: '11:20' },
+  { start: '08:00', end: '08:30' },
+  { start: '08:35', end: '09:55' },
+  { start: '10:05', end: '11:25' },
   { start: '11:25', end: '12:10' },
-  { start: '12:15', end: '13:50' },
-  { start: '13:55', end: '15:30' },
+  { start: '12:10', end: '13:30' },
+  { start: '13:40', end: '15:00' },
 ]
 
 const grid: Record<(typeof days)[number], (string | null)[]> = {
   Mon: ['homeroom', 'bio', 'social', 'lunch', 'cts', 'art'],
-  Tue: ['homeroom', 'social', 'bio', 'lunch', 'art', 'cts'],
-  Wed: ['homeroom', 'bio', 'art', 'lunch', 'cts', 'social'],
-  Thu: ['homeroom', 'social', 'cts', 'lunch', 'bio', 'art'],
-  Fri: ['homeroom', 'art', 'bio', 'lunch', 'social', 'cts'],
+  Tue: ['homeroom', 'bio', 'social', 'lunch', null, 'art'],
+  Wed: ['homeroom', 'bio', 'social', 'lunch', null, 'art'],
+  Thu: ['homeroom', 'bio', 'social', 'lunch', 'cts', 'art'],
+  Fri: ['homeroom', 'bio', 'social', 'lunch', null, 'art'],
 }
 
 export function timetableCell(day: (typeof days)[number], period: number) {
