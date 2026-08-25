@@ -10,6 +10,7 @@ import { useMemo, useState } from 'react'
 import { useAuth, workspaceOf } from '../lib/AuthContext'
 import { subjectEmoji } from '../lib/emoji'
 import DeskPet from '../components/DeskPet'
+import ComingUp from '../components/ComingUp'
 
 export default function Home() {
   const fact = useMemo(() => funFacts[new Date().getDate() % funFacts.length], [])
@@ -40,6 +41,36 @@ export default function Home() {
         <section className="card span-4">
           <h3>Weather on the Mekong</h3>
           <Weather />
+        </section>
+
+        <ComingUp workspaces={studio.workspaces} />
+
+        <section className="span-12">
+          <h3 className="hand" style={{ marginBottom: 10 }}>
+            Main resources
+          </h3>
+          <div className="resource-row">
+            <a
+              className="resource-card"
+              href="https://cisp.students.isams.cloud/#/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <p className="kicker">Student portal</p>
+              <h4>iSAMS</h4>
+              <p>Timetable extras, reports, and the official student desk.</p>
+            </a>
+            <a
+              className="resource-card resource-card-alt"
+              href="https://myapps.classlink.com/home"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <p className="kicker">App tray</p>
+              <h4>ClassLink</h4>
+              <p>Google, ManageBac, and the rest of the CIS apps in one door.</p>
+            </a>
+          </div>
         </section>
 
         <section className="card span-7">

@@ -964,6 +964,83 @@ table.tt td.now-hit {
   font-size: 12px;
 }
 
+.coming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.coming-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  padding: 10px 12px;
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--red);
+  border-radius: 12px;
+}
+
+.coming-row strong {
+  display: block;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.coming-row p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.coming-emoji {
+  font-size: 20px;
+  line-height: 1;
+  width: 28px;
+  text-align: center;
+}
+
+.resource-row {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px 20px;
+  align-items: stretch;
+}
+
+.resource-card {
+  display: block;
+  text-decoration: none;
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px 22px 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--line);
+}
+
+.resource-card .kicker {
+  margin-bottom: 6px;
+}
+
+.resource-card h4 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.resource-card p:last-child {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.resource-card-alt {
+  padding: 26px 20px 20px 24px;
+  background: #fff;
+  border-left: 4px solid var(--red);
+}
+
 .crumbs {
   font-size: 13px;
   color: var(--muted);
@@ -1495,7 +1572,8 @@ select.note-box {
   .bento,
   .two,
   .class-grid,
-  .stat-row {
+  .stat-row,
+  .resource-row {
     grid-template-columns: 1fr;
   }
   .span-2,
