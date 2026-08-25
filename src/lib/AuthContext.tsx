@@ -1,9 +1,7 @@
 import {
   createUserWithEmailAndPassword,
-  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signInWithPopup,
   signOut,
   type User,
 } from 'firebase/auth'
@@ -29,7 +27,6 @@ type AuthValue = {
   studio: StudioData
   sync: 'local' | 'saving' | 'saved' | 'error'
   message: string
-  signInGoogle: () => Promise<void>
   signInEmail: (email: string, password: string) => Promise<void>
   createEmail: (email: string, password: string) => Promise<void>
   logOut: () => Promise<void>
@@ -133,14 +130,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       studio,
       sync,
       message,
-      signInGoogle: async () => {
-        if (!auth) return
-        try {
-          await signInWithPopup(auth, new GoogleAuthProvider())
-        } catch (err) {
-          fail(err)
-        }
-      },
       signInEmail: async (email, password) => {
         if (!auth) return
         try {
