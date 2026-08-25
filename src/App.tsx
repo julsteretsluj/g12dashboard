@@ -11,7 +11,9 @@ import Studio from './pages/Studio'
 import { classes } from './data/school'
 import AccountBar from './components/AccountBar'
 import DeskPet from './components/DeskPet'
+import StatusBar from './components/StatusBar'
 import { useAuth, workspaceOf } from './lib/AuthContext'
+import { TimerProvider } from './lib/TimerContext'
 import { subjectEmoji } from './lib/emoji'
 
 export default function App() {
@@ -20,7 +22,7 @@ export default function App() {
   const showBuddy = pathname !== '/'
 
   return (
-    <>
+    <TimerProvider>
       <div className="leaves" aria-hidden>
         {Array.from({ length: 8 }).map((_, i) => (
           <span
@@ -67,6 +69,8 @@ export default function App() {
         </div>
       </aside>
       <main className="main">
+        <StatusBar />
+        <div className="main-body">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/timetable" element={<TimetablePage />} />
@@ -82,6 +86,7 @@ export default function App() {
           <Route path="/class/:id/unit/:unitId" element={<UnitPage />} />
           <Route path="/class/:id" element={<ClassPage />} />
         </Routes>
+        </div>
         {showBuddy && (
           <div className="pip-float">
             <DeskPet compact />
@@ -89,6 +94,6 @@ export default function App() {
         )}
       </main>
       </div>
-    </>
+    </TimerProvider>
   )
 }
