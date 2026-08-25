@@ -530,12 +530,15 @@ table.tt th {
   font-size: 12px;
 }
 
-.page-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 22px;
+.crumbs {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.crumbs a {
+  color: var(--red);
+  text-decoration: none;
 }
 
 .meta {
@@ -773,9 +776,39 @@ select.note-box {
   transform: rotate(0.7deg);
 }
 
-.sticky:nth-child(3n) {
-  background: var(--mist);
-  transform: rotate(-0.2deg);
+.sticky-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sticky-link:hover {
+  outline: 2px solid var(--red);
+}
+
+.note-sheet {
+  background: #fff8e8;
+}
+
+.note-title-input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: var(--script);
+  font-size: 28px;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+.note-body-input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 50vh;
+  resize: vertical;
+  outline: none;
 }
 
 .sticky h4 {

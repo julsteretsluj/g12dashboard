@@ -1,38 +1,21 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
-import { useEffect, useState, type FormEvent } from 'react'
+import { type FormEvent, useState } from 'react'
 import DocShelf from '../components/DocShelf'
-import {
-  loadWorkspace,
-  newId,
-  saveWorkspace,
-  type TaskItem,
-  type Workspace,
-} from '../lib/workspace'
+import { newId, type TaskItem } from '../lib/workspace'
+import { useWorkspace } from '../lib/useWorkspace'
 import ClassAcademics from '../components/ClassAcademics'
 
 export default function ClassPage() {
   const { id } = useParams()
   const course = classes.find((c) => c.id === id)
-  const [ws, setWs] = useState<Workspace>(() => loadWorkspace(id ?? ''))
+  const { ws, update } = useWorkspace(id)
+  const nav = useNavigate()
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDue, setTaskDue] = useState('')
   const [noteTitle, setNoteTitle] = useState('')
-  const [noteBody, setNoteBody] = useState('')
 
-  useEffect(() => {
-    if (!id) return
-    localStorage.removeItem(`cis-notes-${id}`)
-    setWs(loadWorkspace(id))
-  }, [id])
-
-  function update(next: Workspace) {
-    if (!id) return
-    setWs(next)
-    saveWorkspace(id, next)
-  }
-
-  if (!course) {
+  if (!course || !id) {
     return (
       <p>
         No class here. <Link to="/">Home</Link>
@@ -49,6 +32,7 @@ export default function ClassPage() {
       due: taskDue.trim(),
       note: '',
       done: false,
+      unitId: '',
       attachments: [],
       submissions: [],
     }
@@ -63,6 +47,8 @@ export default function ClassPage() {
       tasks: ws.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
     })
   }
+
+  const loose = ws.tasks.filter((t) => !t.unitId)
 
   return (
     <>
@@ -79,147 +65,86 @@ export default function ClassPage() {
         </Link>
       </header>
 
-      {course.id !== 'homeroom' && <ClassAcademics ws={ws} update={update} />}
+      {course.id !== 'homeroom' && <ClassAcademics classId={id} ws={ws} update={update} />}
 
-      <section className="card" style={{ marginBottom: 16 }}>
-        <h3>Tasks</h3>
-        <p className="meta" style={{ marginBottom: 12 }}>
-          Attach briefings and links on the task. Drop finished work under submissions.
-        </p>
-        {ws.tasks.length === 0 && <p className="meta">No tasks yet — add one below.</p>}
-        {ws.tasks.map((task) => (
-          <article key={task.id} className="assignment">
-            <div className="todo-add" style={{ marginBottom: 8 }}>
-              <input
-                type="checkbox"
-                checked={task.done}
-                onChange={() => patchTask(task.id, { done: !task.done })}
-                aria-label={task.title}
-              />
-              <input
-                className="note-box"
-                value={task.title}
-                onChange={(e) => patchTask(task.id, { title: e.target.value })}
-                placeholder="Task title"
-              />
-              <input
-                className="note-box"
-                value={task.due}
-                onChange={(e) => patchTask(task.id, { due: e.target.value })}
-                placeholder="Due"
-                style={{ maxWidth: 120 }}
-              />
-            </div>
-            <textarea
-              className="note-box"
-              rows={2}
-              placeholder="What this task is…"
-              value={task.note}
-              onChange={(e) => patchTask(task.id, { note: e.target.value })}
+      {course.id === 'homeroom' && (
+        <section className="card" style={{ marginBottom: 16 }}>
+          <h3>Tasks</h3>
+          {loose.length === 0 && <p className="meta">No tasks yet.</p>}
+          {loose.map((task) => (
+            <article key={task.id} className="assignment">
+              <div className="todo-add">
+                <input
+                  type="checkbox"
+                  checked={task.done}
+                  onChange={() => patchTask(task.id, { done: !task.done })}
+                />
+                <input
+                  className="note-box"
+                  value={task.title}
+                  onChange={(e) => patchTask(task.id, { title: e.target.value })}
+                />
+                <button
+                  className="btn ghost"
+                  type="button"
+                  onClick={() => update({ ...ws, tasks: ws.tasks.filter((t) => t.id !== task.id) })}
+                >
+                  Delete
+                </button>
+              </div>
+            </article>
+          ))}
+          <form className="todo-add" onSubmit={addTask} style={{ marginTop: 12 }}>
+            <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New task" />
+            <input
+              value={taskDue}
+              onChange={(e) => setTaskDue(e.target.value)}
+              placeholder="Due"
+              style={{ maxWidth: 140 }}
             />
-            <h4 style={{ marginTop: 12 }}>Task documents & embeds</h4>
-            <DocShelf
-              items={task.attachments}
-              onChange={(attachments) => patchTask(task.id, { attachments })}
-              addLabel="Task"
-            />
-            <h4 style={{ marginTop: 14 }}>Submissions</h4>
-            <DocShelf
-              items={task.submissions}
-              onChange={(submissions) => patchTask(task.id, { submissions })}
-              addLabel="Submission"
-            />
-            <button
-              className="btn ghost"
-              type="button"
-              style={{ marginTop: 10 }}
-              onClick={() => update({ ...ws, tasks: ws.tasks.filter((t) => t.id !== task.id) })}
-            >
-              Delete task
+            <button className="btn" type="submit">
+              Add
             </button>
-          </article>
-        ))}
-        <form className="todo-add" onSubmit={addTask} style={{ marginTop: 12 }}>
-          <input
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
-            placeholder="New task"
-          />
-          <input
-            value={taskDue}
-            onChange={(e) => setTaskDue(e.target.value)}
-            placeholder="Due (e.g. Fri)"
-            style={{ maxWidth: 140 }}
-          />
-          <button className="btn" type="submit">
-            Add task
-          </button>
-        </form>
-      </section>
+          </form>
+        </section>
+      )}
 
       <div className="two">
         <section className="card">
           <h3>Class library</h3>
-          <p className="meta" style={{ marginBottom: 10 }}>
-            Handouts, slides, Drive folders, videos — stored on this device for {course.short}.
-          </p>
-          <DocShelf
-            items={ws.library}
-            onChange={(library) => update({ ...ws, library })}
-            addLabel="Library"
-          />
+          <DocShelf items={ws.library} onChange={(library) => update({ ...ws, library })} addLabel="Library" />
         </section>
         <section className="card">
           <h3>Notes</h3>
-          {ws.notes.length === 0 && <p className="meta">Notes are empty.</p>}
+          {ws.notes.filter((n) => !n.unitId).length === 0 && <p className="meta">Notes are empty.</p>}
           <div className="notes-grid">
-            {ws.notes.map((n) => (
-              <div className="sticky" key={n.id}>
-                <h4>{n.title}</h4>
-                <p>{n.body}</p>
-                <button
-                  className="btn ghost"
-                  type="button"
-                  style={{ marginTop: 8 }}
-                  onClick={() => update({ ...ws, notes: ws.notes.filter((x) => x.id !== n.id) })}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
+            {ws.notes
+              .filter((n) => !n.unitId)
+              .map((n) => (
+                <Link key={n.id} className="sticky sticky-link" to={`/class/${id}/note/${n.id}`}>
+                  <h4>{n.title || 'Untitled'}</h4>
+                  <p>{n.body.slice(0, 120) || 'Empty'}</p>
+                </Link>
+              ))}
           </div>
           <form
+            className="todo-add"
+            style={{ marginTop: 12 }}
             onSubmit={(e) => {
               e.preventDefault()
-              if (!noteTitle.trim() && !noteBody.trim()) return
+              if (!noteTitle.trim()) return
+              const noteId = newId()
               update({
                 ...ws,
-                notes: [
-                  ...ws.notes,
-                  { id: newId(), title: noteTitle.trim() || 'Note', body: noteBody.trim() },
-                ],
+                notes: [...ws.notes, { id: noteId, title: noteTitle.trim(), body: '', unitId: '' }],
               })
               setNoteTitle('')
-              setNoteBody('')
+              nav(`/class/${id}/note/${noteId}`)
             }}
-            style={{ marginTop: 12 }}
           >
-            <input
-              className="note-box"
-              value={noteTitle}
-              onChange={(e) => setNoteTitle(e.target.value)}
-              placeholder="Note title"
-              style={{ width: '100%', marginBottom: 8 }}
-            />
-            <textarea
-              className="note-box"
-              rows={4}
-              value={noteBody}
-              onChange={(e) => setNoteBody(e.target.value)}
-              placeholder="Write a new note…"
-            />
-            <button className="btn" type="submit" style={{ marginTop: 8 }}>
-              Add note
+            <input value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} placeholder="New note" />
+            <button className="btn" type="submit">
+              Add
             </button>
           </form>
         </section>

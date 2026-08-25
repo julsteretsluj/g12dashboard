@@ -13,6 +13,7 @@ export type TaskItem = {
   due: string
   note: string
   done: boolean
+  unitId: string
   attachments: DocItem[]
   submissions: DocItem[]
 }
@@ -40,8 +41,15 @@ export type ReviewItem = {
   done: boolean
 }
 
+export type NoteItem = {
+  id: string
+  title: string
+  body: string
+  unitId: string
+}
+
 export type Workspace = {
-  notes: { id: string; title: string; body: string }[]
+  notes: NoteItem[]
   library: DocItem[]
   tasks: TaskItem[]
   units: UnitItem[]
@@ -70,7 +78,11 @@ export function loadWorkspace(classId: string): Workspace {
   const raw = localStorage.getItem(`cis-ws-${classId}`)
   if (!raw) return empty()
   try {
-    return { ...empty(), ...JSON.parse(raw) }
+    const parsed = JSON.parse(raw) as Partial<Workspace>
+    const base = { ...empty(), ...parsed }
+    base.tasks = (base.tasks ?? []).map((t) => ({ ...t, unitId: t.unitId ?? '' }))
+    base.notes = (base.notes ?? []).map((n) => ({ ...n, unitId: n.unitId ?? '' }))
+    return base
   } catch {
     return empty()
   }

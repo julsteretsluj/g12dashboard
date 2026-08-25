@@ -1,6 +1,10 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import ClassPage from './pages/ClassPage'
+import UnitPage from './pages/UnitPage'
+import AssignmentPage from './pages/AssignmentPage'
+import NotePage from './pages/NotePage'
+import TestPage from './pages/TestPage'
 import TimetablePage from './pages/TimetablePage'
 import CalendarPage from './pages/CalendarPage'
 import Studio from './pages/Studio'
@@ -59,6 +63,11 @@ export default function App() {
           <Route path="/timetable" element={<TimetablePage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/studio" element={<Studio />} />
+          <Route path="/class/:id/unit/:unitId/note/:noteId" element={<NotePage />} />
+          <Route path="/class/:id/note/:noteId" element={<NotePage />} />
+          <Route path="/class/:id/unit/:unitId/task/:taskId" element={<AssignmentPage />} />
+          <Route path="/class/:id/unit/:unitId/test/:testId" element={<TestPage />} />
+          <Route path="/class/:id/unit/:unitId" element={<UnitPage />} />
           <Route path="/class/:id" element={<ClassPage />} />
         </Routes>
       </main>

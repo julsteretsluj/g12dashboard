@@ -1,25 +1,17 @@
+import { Link } from 'react-router-dom'
 import { useState, type FormEvent } from 'react'
-import {
-  newId,
-  pct,
-  schoolAverage,
-  type TestItem,
-  type UnitItem,
-  type Workspace,
-} from '../lib/workspace'
-
-const kinds: TestItem['kind'][] = ['quiz', 'test', 'lab', 'project', 'diploma']
-const statuses: UnitItem['status'][] = ['upcoming', 'current', 'done']
+import { newId, pct, schoolAverage, type Workspace } from '../lib/workspace'
 
 export default function ClassAcademics({
+  classId,
   ws,
   update,
 }: {
+  classId: string
   ws: Workspace
   update: (next: Workspace) => void
 }) {
   const [unitName, setUnitName] = useState('')
-  const [testName, setTestName] = useState('')
   const [review, setReview] = useState('')
   const avg = schoolAverage(ws.tests)
   const target = Number(ws.target) || 0
@@ -42,35 +34,6 @@ export default function ClassAcademics({
     setUnitName('')
   }
 
-  function addTest(e: FormEvent) {
-    e.preventDefault()
-    if (!testName.trim()) return
-    update({
-      ...ws,
-      tests: [
-        ...ws.tests,
-        {
-          id: newId(),
-          name: testName.trim(),
-          kind: 'test',
-          date: '',
-          score: '',
-          outOf: '100',
-          unitId: '',
-        },
-      ],
-    })
-    setTestName('')
-  }
-
-  function patchTest(id: string, patch: Partial<TestItem>) {
-    update({ ...ws, tests: ws.tests.map((t) => (t.id === id ? { ...t, ...patch } : t)) })
-  }
-
-  function patchUnit(id: string, patch: Partial<UnitItem>) {
-    update({ ...ws, units: ws.units.map((u) => (u.id === id ? { ...u, ...patch } : u)) })
-  }
-
   return (
     <>
       <div className="stat-row">
@@ -90,149 +53,40 @@ export default function ClassAcademics({
         </div>
       </div>
 
-      <div className="two" style={{ marginBottom: 16 }}>
-        <section className="card">
-          <h3>Units</h3>
-          <p className="meta">Mark where you are in the course — current, upcoming, or done.</p>
-          {ws.units.length === 0 && <p className="meta">No units yet.</p>}
-          {ws.units.map((u) => (
-            <article key={u.id} className="assignment">
-              <div className="todo-add">
-                <input
-                  className="note-box"
-                  value={u.name}
-                  onChange={(e) => patchUnit(u.id, { name: e.target.value })}
-                  placeholder="Unit name"
-                />
-                <select
-                  className="note-box"
-                  value={u.status}
-                  onChange={(e) => patchUnit(u.id, { status: e.target.value as UnitItem['status'] })}
-                  style={{ maxWidth: 140 }}
-                >
-                  {statuses.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <textarea
-                className="note-box"
-                rows={2}
-                placeholder="Big ideas, labs, pages to finish…"
-                value={u.focus}
-                onChange={(e) => patchUnit(u.id, { focus: e.target.value })}
-              />
-              <button
-                className="btn ghost"
-                type="button"
-                style={{ marginTop: 8 }}
-                onClick={() => update({ ...ws, units: ws.units.filter((x) => x.id !== u.id) })}
-              >
-                Delete unit
-              </button>
-            </article>
-          ))}
-          <form className="todo-add" onSubmit={addUnit}>
-            <input value={unitName} onChange={(e) => setUnitName(e.target.value)} placeholder="Add a unit" />
-            <button className="btn" type="submit">
-              Add
-            </button>
-          </form>
-        </section>
-
-        <section className="card">
-          <h3>Tests & scores</h3>
-          <p className="meta">Quizzes, labs, projects, diploma practice. Leave score blank until it’s back.</p>
-          {ws.tests.length === 0 && <p className="meta">No assessments yet.</p>}
-          {ws.tests.map((t) => {
-            const p = pct(t.score, t.outOf)
+      <section className="card" style={{ marginBottom: 16 }}>
+        <h3>Units</h3>
+        <p className="meta">Open a unit for its assignments and tests.</p>
+        {ws.units.length === 0 && <p className="meta">No units yet.</p>}
+        <div className="class-grid" style={{ marginTop: 12 }}>
+          {ws.units.map((u) => {
+            const tasks = ws.tasks.filter((t) => t.unitId === u.id).length
+            const tests = ws.tests.filter((t) => t.unitId === u.id).length
             return (
-              <article key={t.id} className="assignment">
-                <div className="todo-add">
-                  <input
-                    className="note-box"
-                    value={t.name}
-                    onChange={(e) => patchTest(t.id, { name: e.target.value })}
-                    placeholder="Name"
-                  />
-                  <select
-                    className="note-box"
-                    value={t.kind}
-                    onChange={(e) => patchTest(t.id, { kind: e.target.value as TestItem['kind'] })}
-                    style={{ maxWidth: 120 }}
-                  >
-                    {kinds.map((k) => (
-                      <option key={k} value={k}>
-                        {k}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="todo-add">
-                  <input
-                    className="note-box"
-                    value={t.date}
-                    onChange={(e) => patchTest(t.id, { date: e.target.value })}
-                    placeholder="Date"
-                    style={{ maxWidth: 140 }}
-                  />
-                  <select
-                    className="note-box"
-                    value={t.unitId}
-                    onChange={(e) => patchTest(t.id, { unitId: e.target.value })}
-                  >
-                    <option value="">No unit</option>
-                    {ws.units.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    className="note-box"
-                    value={t.score}
-                    onChange={(e) => patchTest(t.id, { score: e.target.value })}
-                    placeholder="Score"
-                    style={{ maxWidth: 80 }}
-                  />
-                  <span className="meta">/</span>
-                  <input
-                    className="note-box"
-                    value={t.outOf}
-                    onChange={(e) => patchTest(t.id, { outOf: e.target.value })}
-                    placeholder="Out of"
-                    style={{ maxWidth: 80 }}
-                  />
-                  <span className="pill">{p != null ? `${p.toFixed(0)}%` : '—'}</span>
-                </div>
-                <button
-                  className="btn ghost"
-                  type="button"
-                  onClick={() => update({ ...ws, tests: ws.tests.filter((x) => x.id !== t.id) })}
-                >
-                  Delete
-                </button>
-              </article>
+              <Link
+                key={u.id}
+                className="class-tile"
+                to={`/class/${classId}/unit/${u.id}`}
+              >
+                <h4>{u.name}</h4>
+                <p>
+                  {u.status} · {tasks} assignments · {tests} tests
+                </p>
+              </Link>
             )
           })}
-          <form className="todo-add" onSubmit={addTest}>
-            <input value={testName} onChange={(e) => setTestName(e.target.value)} placeholder="Add a test or quiz" />
-            <button className="btn" type="submit">
-              Add
-            </button>
-          </form>
-        </section>
-      </div>
+        </div>
+        <form className="todo-add" onSubmit={addUnit} style={{ marginTop: 14 }}>
+          <input value={unitName} onChange={(e) => setUnitName(e.target.value)} placeholder="Add a unit" />
+          <button className="btn" type="submit">
+            Add unit
+          </button>
+        </form>
+      </section>
 
       <div className="two" style={{ marginBottom: 16 }}>
         <section className="card">
           <h3>Diploma watch</h3>
-          <p className="meta">
-            Alberta 30-level courses blend school-awarded mark with the diploma exam. Set the split
-            you were told (often 70 / 30).
-          </p>
+          <p className="meta">School-awarded mark blended with the diploma exam (often 70 / 30).</p>
           <div className="todo-add">
             <label className="meta">
               Target %
@@ -277,7 +131,6 @@ export default function ClassAcademics({
 
         <section className="card">
           <h3>Still fuzzy</h3>
-          <p className="meta">Dump the bits that refuse to stick. Check them off when they land.</p>
           {ws.reviews.map((r) => (
             <label key={r.id} className={`todo-row ${r.done ? 'done' : ''}`}>
               <input
@@ -312,11 +165,7 @@ export default function ClassAcademics({
               setReview('')
             }}
           >
-            <input
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-              placeholder="e.g. dihybrid ratios, Cold War orthodox view…"
-            />
+            <input value={review} onChange={(e) => setReview(e.target.value)} placeholder="A sticky idea…" />
             <button className="btn" type="submit">
               Add
             </button>
