@@ -75,6 +75,7 @@ export default function UnitPage() {
           outOf: '100',
           unitId,
           emoji: '',
+          note: '',
           practice: /neuron|nervous|synapse|action potential/i.test(testName)
             ? cloneNeuronPractice(newId)
             : [],
@@ -170,6 +171,7 @@ export default function UnitPage() {
                   {t.done ? 'Settled' : t.due ? `Due ${prettyDate(t.due)}` : 'Open'}
                   {steps.length ? ` · ${settled}/${steps.length} sub-tasks` : ''}
                 </p>
+                {t.note.trim() ? <p className="class-tile-blurb">{t.note.trim()}</p> : null}
               </Link>
             )
           })}
@@ -199,6 +201,7 @@ export default function UnitPage() {
                   {t.date ? ` · ${prettyDate(t.date)}` : ''}
                   {p != null ? ` · ${p.toFixed(0)}%` : ''}
                 </p>
+                {t.note.trim() ? <p className="class-tile-blurb">{t.note.trim()}</p> : null}
               </Link>
             )
           })}

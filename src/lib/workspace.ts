@@ -37,6 +37,7 @@ export type TestItem = {
   date: string
   score: string
   outOf: string
+  note: string
   unitId: string
   emoji: string
   practice: PracticeQ[]
@@ -98,7 +99,12 @@ export function hydrateWorkspace(parsed: Partial<Workspace>): Workspace {
     submissions: t.submissions ?? [],
   }))
   base.units = (base.units ?? []).map((u) => ({ ...u, emoji: u.emoji ?? '' }))
-  base.tests = (base.tests ?? []).map((t) => ({ ...t, emoji: t.emoji ?? '', practice: t.practice ?? [] }))
+  base.tests = (base.tests ?? []).map((t) => ({
+    ...t,
+    emoji: t.emoji ?? '',
+    note: t.note ?? '',
+    practice: t.practice ?? [],
+  }))
   base.reviews = (base.reviews ?? []).map((r) => ({ ...r, emoji: r.emoji ?? '' }))
   base.notes = (base.notes ?? []).map((n) => ({
     ...n,

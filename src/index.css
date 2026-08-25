@@ -984,7 +984,7 @@ table.tt td.now-hit {
   border-left: 4px solid var(--red);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .class-tile h4 {
@@ -996,6 +996,17 @@ table.tt td.now-hit {
   margin: 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.class-tile-blurb {
+  margin-top: 8px !important;
+  color: var(--ink) !important;
+  font-size: 13px !important;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .coming-list {

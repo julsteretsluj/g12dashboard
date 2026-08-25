@@ -97,6 +97,14 @@ export default function TestPage() {
           </select>
         </div>
         <DateField label="Test date" value={test.date} onChange={(date) => patch({ date })} />
+        <textarea
+          className="note-box"
+          rows={3}
+          placeholder="What this test covers…"
+          value={test.note}
+          onChange={(e) => patch({ note: e.target.value })}
+          style={{ marginTop: 10 }}
+        />
         <div className="todo-add" style={{ marginTop: 10 }}>
           <input
             className="note-box"
