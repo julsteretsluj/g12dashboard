@@ -17,7 +17,7 @@ export default function Studio() {
       </p>
 
       <div className="bento" style={{ marginTop: 22 }}>
-        <section className="card span-2">
+        <section className="card span-12">
           <h3>Koh Pich from above</h3>
           <iframe
             className="embed tall"
@@ -26,7 +26,7 @@ export default function Studio() {
           />
         </section>
 
-        <section className="card">
+        <section className="card span-7">
           <h3>Campus-adjacent rain</h3>
           <iframe
             className="embed"
@@ -37,7 +37,7 @@ export default function Studio() {
           />
         </section>
 
-        <section className="card">
+        <section className="card span-5">
           <h3>Pocket planetarium</h3>
           <iframe
             className="embed tall"
@@ -46,7 +46,7 @@ export default function Studio() {
           />
         </section>
 
-        <section className="card">
+        <section className="card span-7">
           <h3>Draw a maple in ASCII</h3>
           <textarea
             className="note-box"
@@ -58,7 +58,7 @@ export default function Studio() {
           />
         </section>
 
-        <section className="doodle">
+        <section className="doodle span-5">
           <p className="hand" style={{ margin: 0 }}>
             Shuffle a CIS scrap
           </p>
@@ -72,7 +72,7 @@ export default function Studio() {
           </button>
         </section>
 
-        <section className="card span-2">
+        <section className="card span-12">
           <h3>Official school site</h3>
           <iframe className="embed tall" title="CISP" src="https://www.cisp.edu.kh/" />
         </section>

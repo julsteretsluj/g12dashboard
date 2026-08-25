@@ -27,44 +27,44 @@ export default function Home() {
       </header>
 
       <div className="bento">
-        <section className="card wide">
+        <section className="card wide span-8">
           <h3>
             <span className="hand">Right now </span> · campus clock
           </h3>
           <Clock />
         </section>
-        <section className="card">
+        <section className="card span-4">
           <h3>Weather on the Mekong</h3>
           <Weather />
         </section>
 
-        <section className="card">
+        <section className="card span-7">
           <h3>To-do, Bear-sized</h3>
           <Todo />
         </section>
-        <section className="card">
+        <section className="card span-5">
           <h3>This month</h3>
           <MiniCalendar />
         </section>
 
-        <section className="card span-2 wide">
+        <section className="card span-12 wide">
           <h3>
             This week’s bells <Link to="/timetable" style={{ float: 'right', fontSize: 13, color: 'var(--red)' }}>Open timetable</Link>
           </h3>
           <TimetableGrid />
         </section>
 
-        <section className="card">
+        <section className="card span-5">
           <Pomodoro />
         </section>
-        <section className="doodle">
+        <section className="doodle span-7">
           <div className="bear">🐻</div>
           <p style={{ margin: '8px 0 0' }}>
             <strong>Bear of the hour:</strong> {fact}
           </p>
         </section>
 
-        <section className="card">
+        <section className="card span-5">
           <h3>How’s the day sitting?</h3>
           <div className="mood">
             {['😌', '🤓', '😴', '🔥', '🌧️'].map((m) => (
@@ -77,7 +77,7 @@ export default function Home() {
             {mood ? 'Noted. No grade for feelings.' : 'Tap a face. We will not tell Advisory.'}
           </p>
         </section>
-        <section className="card">
+        <section className="card span-7">
           <h3>Lo-fi for Lab 2</h3>
           <iframe
             className="embed audio"
@@ -88,7 +88,7 @@ export default function Home() {
           />
         </section>
 
-        <section className="span-2">
+        <section className="span-12">
           <h3 className="hand" style={{ marginBottom: 10 }}>
             Class pages
           </h3>
