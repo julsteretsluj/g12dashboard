@@ -788,6 +788,33 @@ table.tt th {
   padding: 4px 6px;
 }
 
+table.tt th.now-day,
+table.tt th.now-bell {
+  color: var(--red);
+  font-weight: 700;
+}
+
+table.tt td.now-col {
+  background: rgba(192, 41, 45, 0.05);
+  border-radius: 10px;
+}
+
+table.tt tr.now-row th,
+table.tt tr.now-row td {
+  box-shadow: inset 0 0 0 1px rgba(192, 41, 45, 0.12);
+}
+
+table.tt td.now-hit {
+  background: transparent;
+}
+
+.cell.now {
+  outline: 2px solid #fff;
+  box-shadow: 0 0 0 3px var(--mustard);
+  position: relative;
+  z-index: 1;
+}
+
 .cell {
   display: block;
   border-radius: 10px;

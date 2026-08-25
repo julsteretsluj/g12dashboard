@@ -87,6 +87,40 @@ export function timetableCell(day: (typeof days)[number], period: number) {
   return grid[day][period]
 }
 
+function minutesFromLabel(label: string) {
+  const [h, m] = label.split(':').map(Number)
+  return h * 60 + m
+}
+
+export function phnomClock(now = new Date()) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Phnom_Penh',
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+      .formatToParts(now)
+      .map((p) => [p.type, p.value]),
+  )
+  return {
+    weekday: parts.weekday ?? '',
+    minutes: Number(parts.hour) * 60 + Number(parts.minute),
+  }
+}
+
+export function activeDay(now = new Date()): (typeof days)[number] | null {
+  const { weekday } = phnomClock(now)
+  return (days as readonly string[]).includes(weekday) ? (weekday as (typeof days)[number]) : null
+}
+
+export function activePeriod(now = new Date()): number | null {
+  const { minutes } = phnomClock(now)
+  const i = bells.findIndex((b) => minutes >= minutesFromLabel(b.start) && minutes < minutesFromLabel(b.end))
+  return i >= 0 ? i : null
+}
+
 export const events = [
   { date: '2026-08-17', end: '2026-08-21', title: 'Academic Team Orientation', tag: 'staff' },
   { date: '2026-08-21', title: 'Orientation for new families SK–Grade 12 (no classes, offices open)', tag: 'start' },

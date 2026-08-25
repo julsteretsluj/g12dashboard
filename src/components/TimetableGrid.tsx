@@ -1,7 +1,17 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { bells, classes, dayCycle, days, timetableCell } from '../data/school'
+import { activeDay, activePeriod, bells, classes, dayCycle, days, timetableCell } from '../data/school'
 
 export default function TimetableGrid() {
+  const [now, setNow] = useState(() => new Date())
+  const today = activeDay(now)
+  const period = activePeriod(now)
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 15_000)
+    return () => clearInterval(id)
+  }, [])
+
   return (
     <div className="table-wrap">
       <table className="tt">
@@ -9,7 +19,7 @@ export default function TimetableGrid() {
           <tr>
             <th>Bell</th>
             {days.map((d, i) => (
-              <th key={d}>
+              <th key={d} className={today === d ? 'now-day' : undefined}>
                 {d}
                 <div className="meta">{dayCycle[i]}</div>
               </th>
@@ -18,19 +28,21 @@ export default function TimetableGrid() {
         </thead>
         <tbody>
           {bells.map((b, i) => (
-            <tr key={b.start}>
-              <th>
+            <tr key={b.start} className={period === i ? 'now-row' : undefined}>
+              <th className={period === i ? 'now-bell' : undefined}>
                 {b.start}
                 <div className="meta">{b.end}</div>
               </th>
               {days.map((d) => {
                 const id = timetableCell(d, i)
+                const here = today === d && period === i
+                const col = today === d
                 if (id === 'lunch') {
                   return (
-                    <td key={d}>
-                      <span className="cell lunch">
+                    <td key={d} className={`${col ? 'now-col' : ''} ${here ? 'now-hit' : ''}`.trim()}>
+                      <span className={`cell lunch ${here ? 'now' : ''}`}>
                         Lunch
-                        <small>11:25–12:10</small>
+                        <small>{here ? 'Now · 11:25–12:10' : '11:25–12:10'}</small>
                       </span>
                     </td>
                   )
@@ -38,13 +50,16 @@ export default function TimetableGrid() {
                 const c = classes.find((x) => x.id === id)
                 if (!c)
                   return (
-                    <td key={d}>
-                      <span className="cell empty">No class</span>
+                    <td key={d} className={`${col ? 'now-col' : ''} ${here ? 'now-hit' : ''}`.trim()}>
+                      <span className={`cell empty ${here ? 'now' : ''}`}>
+                        {here ? 'Now · no class' : 'No class'}
+                      </span>
                     </td>
                   )
                 return (
-                  <td key={d}>
-                    <Link className="cell" style={{ background: c.color }} to={`/class/${c.id}`}>
+                  <td key={d} className={`${col ? 'now-col' : ''} ${here ? 'now-hit' : ''}`.trim()}>
+                    <Link className={`cell ${here ? 'now' : ''}`} style={{ background: c.color }} to={`/class/${c.id}`}>
+                      {here ? 'Now · ' : ''}
                       {c.emoji} {c.short}
                       <small>{c.room}</small>
                     </Link>
