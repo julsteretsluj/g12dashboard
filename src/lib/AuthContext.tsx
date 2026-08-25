@@ -19,6 +19,7 @@ import { loadCloudStudio, saveCloudStudio } from './cloud'
 import { auth, firebaseReady } from './firebase'
 import { readLocalStudio, writeLocalStudio, type StudioData, type TimerSettings, type TodoItem } from './studio'
 import { emptyWorkspace, hydrateWorkspace, type Workspace } from './workspace'
+import { nudgeDueMail } from './dueMail'
 
 type AuthValue = {
   configured: boolean
@@ -76,7 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const cloud = await loadCloudStudio(next.uid)
         const local = readLocalStudio()
-        const merged = cloud ?? local
+        const merged = cloud
+          ? { ...cloud, dueMail: { ...local.dueMail, ...cloud.dueMail } }
+          : local
         if (!cloud) await saveCloudStudio(next.uid, local)
         writeLocalStudio(merged)
         setStudio(merged)
@@ -101,6 +104,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     [pushCloud, user],
   )
+
+  useEffect(() => {
+    if (!ready) return
+    let cancel = false
+    async function tick() {
+      try {
+        const next = await nudgeDueMail(studioRef.current)
+        if (!cancel && next) apply(next)
+      } catch {
+        /* mail host can be blocked; try again next open */
+      }
+    }
+    void tick()
+    const id = window.setInterval(tick, 30 * 60 * 1000)
+    return () => {
+      cancel = true
+      window.clearInterval(id)
+    }
+  }, [apply, ready, user?.uid])
 
   const patchWorkspace = useCallback(
     (classId: string, next: Workspace) => {

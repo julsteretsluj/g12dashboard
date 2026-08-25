@@ -1047,6 +1047,53 @@ table.tt td.now-hit {
   text-align: center;
 }
 
+.remind-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.remind-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.remind-row.is-done {
+  background: #fff;
+}
+
+.remind-row.is-done strong {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.remind-row div {
+  flex: 1;
+  min-width: 0;
+}
+
+.remind-row strong {
+  display: block;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.remind-row p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.remind-row .btn {
+  flex: none;
+}
+
 .resource-row {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -1530,15 +1577,67 @@ select.note-box {
   outline: none;
 }
 
-.note-body-input {
-  width: 100%;
-  border: 0;
-  background: transparent;
+.note-editor {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.note-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  background: #f2f2f7;
+}
+
+.note-toolbar .btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.note-canvas {
+  min-height: 42vh;
+  padding: 14px 16px 18px;
   font-size: 16px;
   line-height: 1.55;
-  min-height: 42vh;
-  resize: vertical;
   outline: none;
+}
+
+.note-canvas:empty::before {
+  content: attr(data-placeholder);
+  color: var(--faint);
+}
+
+.note-canvas p {
+  margin: 0 0 0.7em;
+}
+
+.note-canvas h2,
+.note-canvas h3 {
+  margin: 0.4em 0 0.5em;
+  letter-spacing: -0.03em;
+  font-weight: 650;
+}
+
+.note-canvas h2 {
+  font-size: 22px;
+}
+
+.note-canvas h3 {
+  font-size: 18px;
+}
+
+.note-canvas ul,
+.note-canvas ol {
+  margin: 0 0 0.7em;
+  padding-left: 1.3em;
+}
+
+.note-canvas li {
+  margin: 0.2em 0;
 }
 
 .sticky h4 {

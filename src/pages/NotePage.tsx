@@ -4,6 +4,7 @@ import { useWorkspace } from '../lib/useWorkspace'
 import type { NoteItem } from '../lib/workspace'
 import EmojiPick from '../components/EmojiPick'
 import DateField from '../components/DateField'
+import NoteEditor from '../components/NoteEditor'
 
 export default function NotePage() {
   const { id, unitId, taskId, testId, noteId } = useParams()
@@ -111,16 +112,10 @@ export default function NotePage() {
             placeholder="Lecture, lab, chapter…"
           />
         </label>
-        <label className="field">
+        <div className="field">
           <span className="meta">Notes</span>
-          <textarea
-            className="note-box field-control"
-            value={current.body}
-            onChange={(e) => patch({ body: e.target.value })}
-            placeholder="Write here…"
-            rows={16}
-          />
-        </label>
+          <NoteEditor key={current.id} html={current.body} onChange={(body) => patch({ body })} />
+        </div>
         <button
           className="btn ghost"
           type="button"

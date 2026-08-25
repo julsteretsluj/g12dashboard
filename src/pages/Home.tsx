@@ -11,6 +11,7 @@ import { useAuth, workspaceOf } from '../lib/AuthContext'
 import { subjectEmoji } from '../lib/emoji'
 import DeskPet from '../components/DeskPet'
 import ComingUp from '../components/ComingUp'
+import Reminders from '../components/Reminders'
 
 export default function Home() {
   const fact = useMemo(() => funFacts[new Date().getDate() % funFacts.length], [])
@@ -44,6 +45,8 @@ export default function Home() {
         </section>
 
         <ComingUp workspaces={studio.workspaces} />
+
+        <Reminders />
 
         <section className="span-12">
           <h3 className="hand" style={{ marginBottom: 10 }}>

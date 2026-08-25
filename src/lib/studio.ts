@@ -14,6 +14,7 @@ export type StudioData = {
   todo: TodoItem[]
   workspaces: Record<string, Workspace>
   timer: TimerSettings
+  dueMail: Record<string, string>
 }
 
 export function readLocalStudio(): StudioData {
@@ -40,12 +41,24 @@ export function readLocalStudio(): StudioData {
   }
   timer.minutes = Math.min(180, Math.max(1, Number(timer.minutes) || 25))
   timer.title = timer.title.trim() || 'Focus maple'
-  return { todo, workspaces, timer }
+  return { todo, workspaces, timer, dueMail: readDueMail() }
+}
+
+function readDueMail(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem('cis-due-mail-v1')
+    if (!raw) return {}
+    const parsed = JSON.parse(raw) as Record<string, string>
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
 }
 
 export function writeLocalStudio(data: StudioData) {
   localStorage.setItem('cis-todo-v2', JSON.stringify(data.todo ?? []))
   localStorage.setItem('cis-pomo-v1', JSON.stringify(data.timer ?? defaultTimer()))
+  localStorage.setItem('cis-due-mail-v1', JSON.stringify(data.dueMail ?? {}))
   for (const [id, ws] of Object.entries(data.workspaces ?? {})) {
     saveWorkspace(id, ws)
   }

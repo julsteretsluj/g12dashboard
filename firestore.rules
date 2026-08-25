@@ -23,13 +23,24 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isValidStudio() {
+    function studioKeys() {
       return request.resource.data.keys().hasOnly(['todo', 'workspaces', 'updatedAt', 'timer'])
+        || request.resource.data.keys().hasOnly(['todo', 'workspaces', 'updatedAt', 'timer', 'dueMail']);
+    }
+
+    function isValidStudio() {
+      return studioKeys()
         && request.resource.data.todo is list
         && request.resource.data.workspaces is map
         && request.resource.data.updatedAt is number
         && request.resource.data.timer is map
-        && isValidTimer();
+        && isValidTimer()
+        && isValidDueMail();
+    }
+
+    function isValidDueMail() {
+      return !('dueMail' in request.resource.data)
+        || request.resource.data.dueMail is map;
     }
 
     function isValidTimer() {

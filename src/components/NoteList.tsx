@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { NoteItem } from '../lib/workspace'
 import { prettyDate } from './DateField'
+import { stripNoteHtml } from '../lib/noteHtml'
 
 type Props = {
   notes: NoteItem[]
@@ -27,6 +28,7 @@ export default function NoteList({ notes, hrefFor, onCreate, empty = 'No notes y
         const when = n.date ? prettyDate(n.date) : ''
         const topic = n.topic.trim()
         const meta = [topic, when].filter(Boolean).join(' · ') || 'Open'
+        const preview = stripNoteHtml(n.body)
         return (
           <Link key={n.id} className="class-tile" to={hrefFor(n.id)} style={{ marginBottom: 8 }}>
             <h4>
@@ -34,7 +36,7 @@ export default function NoteList({ notes, hrefFor, onCreate, empty = 'No notes y
               {n.title || 'Untitled'}
             </h4>
             <p>{meta}</p>
-            {n.body.trim() ? <p className="class-tile-blurb">{n.body.trim()}</p> : null}
+            {preview ? <p className="class-tile-blurb">{preview}</p> : null}
           </Link>
         )
       })}
