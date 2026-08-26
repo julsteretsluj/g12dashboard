@@ -1672,6 +1672,17 @@ select.note-box {
   font-size: 13px;
 }
 
+.note-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.note-tool-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
 .note-canvas {
   min-height: 42vh;
   padding: 14px 16px 18px;
@@ -1712,6 +1723,12 @@ select.note-box {
 
 .note-canvas li {
   margin: 0.2em 0;
+}
+
+.note-canvas blockquote {
+  margin: 0 0 0.7em;
+  padding-left: 1.4em;
+  border: 0;
 }
 
 .sticky h4 {
