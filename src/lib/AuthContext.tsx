@@ -17,7 +17,7 @@ import {
 } from 'react'
 import { loadCloudStudio, saveCloudStudio } from './cloud'
 import { auth, firebaseReady } from './firebase'
-import { readLocalStudio, writeLocalStudio, type StudioData, type TimerSettings, type TodoItem } from './studio'
+import { readLocalStudio, writeLocalStudio, type MoodBook, type StudioData, type TimerSettings, type TodoItem } from './studio'
 import { emptyWorkspace, hydrateWorkspace, type Workspace } from './workspace'
 import { nudgeDueMail } from './dueMail'
 
@@ -34,6 +34,8 @@ type AuthValue = {
   patchWorkspace: (classId: string, next: Workspace) => void
   patchTodo: (next: TodoItem[]) => void
   patchTimer: (next: TimerSettings) => void
+  patchMoods: (next: MoodBook) => void
+  patchProductivity: (next: MoodBook) => void
 }
 
 const AuthContext = createContext<AuthValue | null>(null)
@@ -78,7 +80,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const cloud = await loadCloudStudio(next.uid)
         const local = readLocalStudio()
         const merged = cloud
-          ? { ...cloud, dueMail: { ...local.dueMail, ...cloud.dueMail } }
+          ? {
+              ...cloud,
+              dueMail: { ...local.dueMail, ...cloud.dueMail },
+              moods: {
+                keys: cloud.moods.keys.length ? cloud.moods.keys : local.moods.keys,
+                days: { ...local.moods.days, ...cloud.moods.days },
+              },
+              productivity: {
+                keys: cloud.productivity.keys.length ? cloud.productivity.keys : local.productivity.keys,
+                days: { ...local.productivity.days, ...cloud.productivity.days },
+              },
+            }
           : local
         if (!cloud) await saveCloudStudio(next.uid, local)
         writeLocalStudio(merged)
@@ -148,6 +161,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [apply],
   )
 
+  const patchMoods = useCallback(
+    (next: MoodBook) => {
+      apply({ ...studioRef.current, moods: next })
+    },
+    [apply],
+  )
+
+  const patchProductivity = useCallback(
+    (next: MoodBook) => {
+      apply({ ...studioRef.current, productivity: next })
+    },
+    [apply],
+  )
+
   const fail = (err: unknown) => {
     setMessage(err instanceof Error ? err.message : 'Sign-in failed')
   }
@@ -183,8 +210,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       patchWorkspace,
       patchTodo,
       patchTimer,
+      patchMoods,
+      patchProductivity,
     }),
-    [message, patchTimer, patchTodo, patchWorkspace, ready, studio, sync, user],
+    [message, patchMoods, patchProductivity, patchTimer, patchTodo, patchWorkspace, ready, studio, sync, user],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
