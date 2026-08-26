@@ -12,6 +12,7 @@ export type MoodKey = {
   id: string
   emoji: string
   label: string
+  color: string
 }
 
 export type MoodBook = {
@@ -21,24 +22,32 @@ export type MoodBook = {
 
 export const defaultTimer = (): TimerSettings => ({ title: 'Focus maple', minutes: 25 })
 
+const FALLBACK_COLORS = ['#A8D5A2', '#7EB6FF', '#C5B4E3', '#FFB347', '#A8C5D4', '#F2C94C', '#EB8A8A']
+
+export function normalizeKeyColor(value: unknown, fallback = '#AEAEB2') {
+  if (typeof value !== 'string') return fallback
+  const v = value.trim()
+  return /^#[0-9A-Fa-f]{6}$/.test(v) ? v : fallback
+}
+
 export const defaultMoodBook = (): MoodBook => ({
   keys: [
-    { id: 'mood-calm', emoji: '😌', label: 'Calm / okay' },
-    { id: 'mood-focus', emoji: '🤓', label: 'Locked in' },
-    { id: 'mood-tired', emoji: '😴', label: 'Tired' },
-    { id: 'mood-fire', emoji: '🔥', label: 'Fired up' },
-    { id: 'mood-rain', emoji: '🌧️', label: 'Heavy day' },
+    { id: 'mood-calm', emoji: '😌', label: 'Calm / okay', color: '#A8D5A2' },
+    { id: 'mood-focus', emoji: '🤓', label: 'Locked in', color: '#7EB6FF' },
+    { id: 'mood-tired', emoji: '😴', label: 'Tired', color: '#C5B4E3' },
+    { id: 'mood-fire', emoji: '🔥', label: 'Fired up', color: '#FFB347' },
+    { id: 'mood-rain', emoji: '🌧️', label: 'Heavy day', color: '#A8C5D4' },
   ],
   days: {},
 })
 
 export const defaultProductivityBook = (): MoodBook => ({
   keys: [
-    { id: 'prod-deep', emoji: '🎯', label: 'Deep focus' },
-    { id: 'prod-steady', emoji: '✅', label: 'Steady progress' },
-    { id: 'prod-meh', emoji: '🟡', label: 'Okay / mixed' },
-    { id: 'prod-scatter', emoji: '🌪️', label: 'Scattered' },
-    { id: 'prod-off', emoji: '🚫', label: 'Off day' },
+    { id: 'prod-deep', emoji: '🎯', label: 'Deep focus', color: '#5B8DEF' },
+    { id: 'prod-steady', emoji: '✅', label: 'Steady progress', color: '#6FCF97' },
+    { id: 'prod-meh', emoji: '🟡', label: 'Okay / mixed', color: '#F2C94C' },
+    { id: 'prod-scatter', emoji: '🌪️', label: 'Scattered', color: '#F2994A' },
+    { id: 'prod-off', emoji: '🚫', label: 'Off day', color: '#EB8A8A' },
   ],
   days: {},
 })
@@ -51,6 +60,11 @@ export function hydrateMoodBook(raw?: Partial<MoodBook> | null, fallback: MoodBo
           id: typeof k.id === 'string' && k.id ? k.id : `key-${i}`,
           emoji: k.emoji.trim(),
           label: typeof k.label === 'string' ? k.label.trim() : '',
+          color: normalizeKeyColor(
+            (k as MoodKey).color,
+            fallback.keys.find((f) => f.emoji === k.emoji.trim())?.color ??
+              FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+          ),
         }))
     : fallback.keys
   const days: Record<string, string> = {}

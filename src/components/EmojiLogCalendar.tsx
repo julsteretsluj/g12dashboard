@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import type { MoodBook } from '../lib/studio'
+import { normalizeKeyColor } from '../lib/studio'
 import { phnomPenhIso } from '../lib/dueMail'
 import { newId } from '../lib/workspace'
 import { prettyDate } from './DateField'
@@ -11,6 +12,10 @@ function isoFor(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
 
+function cellFill(color: string) {
+  return `color-mix(in srgb, ${color} 72%, white)`
+}
+
 export default function EmojiLogCalendar({
   book,
   onChange,
@@ -19,6 +24,7 @@ export default function EmojiLogCalendar({
   keyHint = 'Pick an emoji and write what it means. You’ll read the pattern back later.',
   pickEmpty = 'Pick a key emoji for this day.',
   draftFallback = '🙂',
+  draftColorFallback = '#AEAEB2',
   emojiLabel = 'Key emoji',
   meaningLabel = 'Meaning',
 }: {
@@ -29,6 +35,7 @@ export default function EmojiLogCalendar({
   keyHint?: string
   pickEmpty?: string
   draftFallback?: string
+  draftColorFallback?: string
   emojiLabel?: string
   meaningLabel?: string
 }) {
@@ -40,6 +47,7 @@ export default function EmojiLogCalendar({
   const [selected, setSelected] = useState(today)
   const [draftEmoji, setDraftEmoji] = useState(draftFallback)
   const [draftLabel, setDraftLabel] = useState('')
+  const [draftColor, setDraftColor] = useState(draftColorFallback)
 
   const first = new Date(cursor.year, cursor.month, 1).getDay()
   const daysInMonth = new Date(cursor.year, cursor.month + 1, 0).getDate()
@@ -47,7 +55,9 @@ export default function EmojiLogCalendar({
   const cells = [...Array(startPad).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
 
   const selectedEmoji = book.days[selected] ?? ''
-  const labelFor = (emoji: string) => book.keys.find((k) => k.emoji === emoji)?.label ?? ''
+  const keyFor = (emoji: string) => book.keys.find((k) => k.emoji === emoji)
+  const labelFor = (emoji: string) => keyFor(emoji)?.label ?? ''
+  const colorFor = (emoji: string) => keyFor(emoji)?.color ?? ''
 
   const monthStats = useMemo(() => {
     const prefix = `${cursor.year}-${String(cursor.month + 1).padStart(2, '0')}-`
@@ -61,6 +71,7 @@ export default function EmojiLogCalendar({
         emoji,
         count,
         label: book.keys.find((k) => k.emoji === emoji)?.label ?? '',
+        color: book.keys.find((k) => k.emoji === emoji)?.color ?? '#AEAEB2',
       }))
       .sort((a, b) => b.count - a.count)
   }, [book.days, book.keys, cursor.month, cursor.year])
@@ -83,17 +94,25 @@ export default function EmojiLogCalendar({
     e.preventDefault()
     const emoji = draftEmoji.trim()
     const label = draftLabel.trim()
+    const color = normalizeKeyColor(draftColor, draftColorFallback)
     if (!emoji || !label) return
     const existing = book.keys.find((k) => k.emoji === emoji)
     const keys = existing
-      ? book.keys.map((k) => (k.emoji === emoji ? { ...k, label } : k))
-      : [...book.keys, { id: newId(), emoji, label }]
+      ? book.keys.map((k) => (k.emoji === emoji ? { ...k, label, color } : k))
+      : [...book.keys, { id: newId(), emoji, label, color }]
     onChange({ ...book, keys })
     setDraftLabel('')
   }
 
   function removeKey(id: string) {
     onChange({ ...book, keys: book.keys.filter((k) => k.id !== id) })
+  }
+
+  function setKeyColor(id: string, color: string) {
+    onChange({
+      ...book,
+      keys: book.keys.map((k) => (k.id === id ? { ...k, color: normalizeKeyColor(color, k.color) } : k)),
+    })
   }
 
   return (
@@ -120,26 +139,34 @@ export default function EmojiLogCalendar({
               const iso = isoFor(cursor.year, cursor.month, d)
               const emoji = book.days[iso]
               const meaning = emoji ? labelFor(emoji) : ''
+              const color = emoji ? colorFor(emoji) : ''
               return (
                 <button
                   key={i}
                   type="button"
                   className={`cal-cell mood-day ${iso === today ? 'today' : ''} ${iso === selected ? 'is-selected' : ''} ${emoji ? 'has-mood' : ''}`}
+                  style={color ? { background: cellFill(color) } : undefined}
                   onClick={() => setSelected(iso)}
                   title={meaning ? `${prettyDate(iso)} · ${meaning}` : prettyDate(iso)}
                 >
                   <span className="mood-day-num">{d}</span>
-                  <span className="mood-day-face" aria-hidden>
-                    {emoji || '·'}
-                  </span>
+                  {emoji ? (
+                    <span className="mood-day-face" aria-hidden>
+                      {emoji}
+                    </span>
+                  ) : null}
                 </button>
               )
             })}
           </div>
           {monthStats.length > 0 && (
-            <p className="meta mood-month-stats">
-              This month: {monthStats.map((s) => `${s.emoji}×${s.count}`).join(' · ')}
-            </p>
+            <div className="mood-month-stats">
+              {monthStats.map((s) => (
+                <span key={s.emoji} className="mood-stat-chip" style={{ background: cellFill(s.color) }}>
+                  {s.emoji}×{s.count}
+                </span>
+              ))}
+            </div>
           )}
         </div>
 
@@ -159,6 +186,7 @@ export default function EmojiLogCalendar({
                   type="button"
                   className={selectedEmoji === k.emoji ? 'on' : ''}
                   title={k.label}
+                  style={{ background: cellFill(k.color), borderColor: k.color }}
                   onClick={() => setDayValue(k.emoji)}
                 >
                   <span aria-hidden>{k.emoji}</span>
@@ -188,6 +216,14 @@ export default function EmojiLogCalendar({
                 label={emojiLabel}
               />
               <input
+                className="mood-color"
+                type="color"
+                value={draftColor}
+                onChange={(e) => setDraftColor(e.target.value)}
+                aria-label="Key color"
+                title="Key color"
+              />
+              <input
                 className="note-box"
                 value={draftLabel}
                 onChange={(e) => setDraftLabel(e.target.value)}
@@ -200,11 +236,19 @@ export default function EmojiLogCalendar({
             </form>
             <ul className="mood-key-list">
               {book.keys.map((k) => (
-                <li key={k.id}>
+                <li key={k.id} style={{ background: cellFill(k.color) }}>
                   <span className="mood-key-emoji" aria-hidden>
                     {k.emoji}
                   </span>
                   <span>{k.label || 'Untitled'}</span>
+                  <input
+                    className="mood-color"
+                    type="color"
+                    value={k.color}
+                    onChange={(e) => setKeyColor(k.id, e.target.value)}
+                    aria-label={`Color for ${k.label || k.emoji}`}
+                    title="Change color"
+                  />
                   <button className="btn ghost" type="button" onClick={() => removeKey(k.id)}>
                     Remove
                   </button>

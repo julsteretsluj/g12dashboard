@@ -12,6 +12,7 @@ export default function ProductivityCalendar() {
       keyHint="Pick an emoji and write what that level means for you."
       pickEmpty="Pick a productivity level for this day."
       draftFallback="🎯"
+      draftColorFallback="#5B8DEF"
       emojiLabel="Productivity emoji"
       meaningLabel="Productivity meaning"
     />

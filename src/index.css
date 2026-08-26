@@ -1794,7 +1794,7 @@ select.note-box {
 
 .mood-book-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 20px 28px;
   align-items: start;
 }
@@ -1805,6 +1805,7 @@ select.note-box {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 10px;
+  max-width: 280px;
 }
 
 .mood-month-nav h4 {
@@ -1813,17 +1814,31 @@ select.note-box {
   letter-spacing: -0.02em;
 }
 
+.mood-cal {
+  width: max-content;
+  max-width: 100%;
+  grid-template-columns: repeat(7, 34px);
+  gap: 3px;
+}
+
+.mood-cal .dow {
+  width: 34px;
+  padding-bottom: 2px;
+  font-size: 9px;
+}
+
 .mood-cal .mood-day {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  min-height: 52px;
-  padding: 4px 2px;
-  border: 1px solid transparent;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid rgba(60, 60, 67, 0.12);
   background: #fafafa;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   font: inherit;
   color: inherit;
@@ -1832,20 +1847,26 @@ select.note-box {
 .mood-cal .mood-day.is-empty {
   background: transparent;
   cursor: default;
-  min-height: 52px;
   border: 0;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
 }
 
 .mood-cal .mood-day-num {
-  font-size: 11px;
-  color: var(--muted);
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 8px;
   line-height: 1;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .mood-cal .mood-day-face {
-  font-size: 16px;
-  line-height: 1.1;
-  min-height: 1.1em;
+  font-size: 15px;
+  line-height: 1;
+  margin-top: 2px;
 }
 
 .mood-cal .mood-day.today {
@@ -1853,22 +1874,32 @@ select.note-box {
 }
 
 .mood-cal .mood-day.is-selected {
-  border-color: rgba(0, 122, 255, 0.45);
-  background: #eef5ff;
-}
-
-.mood-cal .mood-day.has-mood .mood-day-face {
-  opacity: 1;
+  outline: 2px solid #007aff;
+  outline-offset: 1px;
 }
 
 .mood-month-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin: 10px 0 0;
+  max-width: 280px;
+}
+
+.mood-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 980px;
+  font-size: 12px;
+  color: var(--ink);
 }
 
 .mood-side {
   display: flex;
   flex-direction: column;
   gap: 22px;
+  min-width: 0;
 }
 
 .mood-pick {
@@ -1892,8 +1923,7 @@ select.note-box {
 }
 
 .mood-pick > button.on {
-  border-color: var(--red);
-  background: var(--red-soft);
+  box-shadow: inset 0 0 0 1.5px #007aff;
 }
 
 .mood-pick > button > span:first-child {
@@ -1918,6 +1948,26 @@ select.note-box {
 .mood-key-form .note-box {
   flex: 1 1 140px;
   min-width: 0;
+}
+
+.mood-color {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mood-color::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+
+.mood-color::-webkit-color-swatch {
+  border: 0;
+  border-radius: 5px;
 }
 
 .mood-key-list {

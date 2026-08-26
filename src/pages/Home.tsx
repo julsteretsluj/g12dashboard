@@ -14,8 +14,6 @@ import ComingUp from '../components/ComingUp'
 import HomePractice from '../components/HomePractice'
 import RecentNotes from '../components/RecentNotes'
 import Reminders from '../components/Reminders'
-import MoodCalendar from '../components/MoodCalendar'
-import ProductivityCalendar from '../components/ProductivityCalendar'
 
 export default function Home() {
   const fact = useMemo(() => funFacts[new Date().getDate() % funFacts.length], [])
@@ -109,21 +107,16 @@ export default function Home() {
           </p>
         </section>
 
-        <section className="card span-12">
-          <h3>Mood calendar</h3>
+        <section className="card span-5">
+          <h3>How’s the day sitting?</h3>
           <p className="meta" style={{ marginTop: 0 }}>
-            Tap a day, then a key. Build your own emoji meanings so you can look back later.
+            Mood and productivity logs live on Check-in — with colors you can tune.
           </p>
-          <MoodCalendar />
+          <Link className="btn" to="/check-in" style={{ marginTop: 10 }}>
+            Open check-in
+          </Link>
         </section>
-        <section className="card span-12">
-          <h3>Productivity calendar</h3>
-          <p className="meta" style={{ marginTop: 0 }}>
-            Same idea for how the work went — custom levels you can review by month.
-          </p>
-          <ProductivityCalendar />
-        </section>
-        <div className="span-12">
+        <div className="span-7">
           <DeskPet />
         </div>
 
