@@ -1,4 +1,5 @@
 rules_version = '2';
+// Desk snapshot: todo, workspaces, timer, dueMail, moods, productivity
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
@@ -24,8 +25,16 @@ service cloud.firestore {
     }
 
     function studioKeys() {
-      return request.resource.data.keys().hasOnly(['todo', 'workspaces', 'updatedAt', 'timer'])
-        || request.resource.data.keys().hasOnly(['todo', 'workspaces', 'updatedAt', 'timer', 'dueMail']);
+      return request.resource.data.keys().hasAll(['todo', 'workspaces', 'updatedAt', 'timer'])
+        && request.resource.data.keys().hasOnly([
+          'todo',
+          'workspaces',
+          'updatedAt',
+          'timer',
+          'dueMail',
+          'moods',
+          'productivity',
+        ]);
     }
 
     function isValidStudio() {
@@ -35,12 +44,26 @@ service cloud.firestore {
         && request.resource.data.updatedAt is number
         && request.resource.data.timer is map
         && isValidTimer()
-        && isValidDueMail();
+        && isValidDueMail()
+        && isValidEmojiBookField('moods')
+        && isValidEmojiBookField('productivity');
     }
 
     function isValidDueMail() {
       return !('dueMail' in request.resource.data)
         || request.resource.data.dueMail is map;
+    }
+
+    function isValidEmojiBookField(name) {
+      return !(name in request.resource.data)
+        || isValidEmojiBook(request.resource.data[name]);
+    }
+
+    function isValidEmojiBook(book) {
+      return book is map
+        && book.keys().hasOnly(['keys', 'days'])
+        && book.get('keys', []) is list
+        && book.get('days', {}) is map;
     }
 
     function isValidTimer() {
