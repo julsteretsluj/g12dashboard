@@ -142,6 +142,10 @@ export default function TestPage() {
         />
         <PracticeDrill
           questions={test.practice ?? []}
+          title="Practice · Neurons"
+          subtitle="Bio 30 style, unofficial"
+          emptyHint="A nested drill for this test — not the official mark."
+          generateLabel="Generate neuron practice"
           onGenerate={() => patch({ practice: cloneNeuronPractice(newId) })}
           onClear={() => patch({ practice: [] })}
         />

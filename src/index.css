@@ -1121,6 +1121,25 @@ table.tt td.now-hit {
   text-align: center;
 }
 
+.coming-row .recent-note-preview {
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.coming-row:has(.recent-note-preview) {
+  align-items: flex-start;
+}
+
+.coming-row:has(.recent-note-preview) .coming-emoji {
+  margin-top: 2px;
+}
+
 .remind-list {
   display: flex;
   flex-direction: column;
@@ -1368,6 +1387,12 @@ select.note-box {
   margin-top: 22px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
+}
+
+.card > .practice:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
 .practice h3 {

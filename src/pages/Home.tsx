@@ -11,6 +11,8 @@ import { useAuth, workspaceOf } from '../lib/AuthContext'
 import { subjectEmoji } from '../lib/emoji'
 import DeskPet from '../components/DeskPet'
 import ComingUp from '../components/ComingUp'
+import HomePractice from '../components/HomePractice'
+import RecentNotes from '../components/RecentNotes'
 import Reminders from '../components/Reminders'
 
 export default function Home() {
@@ -45,6 +47,10 @@ export default function Home() {
         </section>
 
         <ComingUp workspaces={studio.workspaces} />
+
+        <RecentNotes workspaces={studio.workspaces} />
+
+        <HomePractice />
 
         <Reminders />
 

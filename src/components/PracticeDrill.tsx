@@ -5,10 +5,18 @@ export default function PracticeDrill({
   questions,
   onClear,
   onGenerate,
+  title = 'Practice',
+  subtitle = 'Unofficial desk drill — not the official mark.',
+  emptyHint = 'Generate a set when you want a quick check.',
+  generateLabel = 'Generate practice',
 }: {
   questions: PracticeQ[]
   onClear: () => void
   onGenerate: () => void
+  title?: string
+  subtitle?: string
+  emptyHint?: string
+  generateLabel?: string
 }) {
   const [picks, setPicks] = useState<Record<string, number>>({})
   const [checked, setChecked] = useState(false)
@@ -19,10 +27,10 @@ export default function PracticeDrill({
   if (questions.length === 0) {
     return (
       <div className="practice">
-        <h3>Practice</h3>
-        <p className="meta">A nested drill for this test — not the official mark.</p>
+        <h3>{title}</h3>
+        <p className="meta">{emptyHint}</p>
         <button className="btn" type="button" onClick={onGenerate} style={{ marginTop: 8 }}>
-          Generate neuron practice
+          {generateLabel}
         </button>
       </div>
     )
@@ -32,11 +40,11 @@ export default function PracticeDrill({
     <div className="practice">
       <div className="practice-head">
         <div>
-          <h3>Practice · Neurons</h3>
+          <h3>{title}</h3>
           <p className="meta">
             {checked
               ? `${right} / ${questions.length} correct`
-              : `${answered} / ${questions.length} answered · Bio 30 style, unofficial`}
+              : `${answered} / ${questions.length} answered · ${subtitle}`}
           </p>
         </div>
         <div className="todo-add" style={{ marginTop: 0 }}>
@@ -97,7 +105,12 @@ export default function PracticeDrill({
                 <span>{c}</span>
               </label>
             ))}
-            {show && <p className="practice-why">{good ? 'Yes. ' : `Answer: ${q.choices[q.correct]}. `}{q.explain}</p>}
+            {show && (
+              <p className="practice-why">
+                {good ? 'Yes. ' : `Answer: ${q.choices[q.correct]}. `}
+                {q.explain}
+              </p>
+            )}
           </fieldset>
         )
       })}
