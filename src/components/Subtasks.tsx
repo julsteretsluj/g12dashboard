@@ -8,11 +8,13 @@ export default function Subtasks({
   hrefFor,
   onAdd,
   onToggle,
+  classId,
 }: {
   items: TaskItem[]
   hrefFor: (id: string) => string
   onAdd: (title: string, due: string) => void
   onToggle: (id: string, done: boolean) => void
+  classId?: string
 }) {
   const [title, setTitle] = useState('')
   const [due, setDue] = useState('')
@@ -58,7 +60,7 @@ export default function Subtasks({
             Add
           </button>
         </div>
-        <DateField label="Due" value={due} onChange={setDue} />
+        <DateField label="Due" value={due} onChange={setDue} classId={classId} />
       </form>
     </div>
   )

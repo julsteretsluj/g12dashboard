@@ -10,6 +10,7 @@ import CalendarPage from './pages/CalendarPage'
 import Studio from './pages/Studio'
 import PracticePage from './pages/PracticePage'
 import CheckInPage from './pages/CheckInPage'
+import HomeworkPage from './pages/HomeworkPage'
 import { classes } from './data/school'
 import AccountBar from './components/AccountBar'
 import DeskPet from './components/DeskPet'
@@ -56,6 +57,7 @@ export default function App() {
           <NavLink to="/timetable">Timetable</NavLink>
           <NavLink to="/calendar">Calendar</NavLink>
           <NavLink to="/check-in">Check-in</NavLink>
+          <NavLink to="/homework">Homework</NavLink>
           <NavLink to="/studio">Whimsy lab</NavLink>
           <div className="nav-label">Classes</div>
           {classes.map((c) => (
@@ -79,6 +81,7 @@ export default function App() {
           <Route path="/timetable" element={<TimetablePage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/check-in" element={<CheckInPage />} />
+          <Route path="/homework" element={<HomeworkPage />} />
           <Route path="/studio" element={<Studio />} />
           <Route path="/practice/:id" element={<PracticePage />} />
           <Route path="/class/:id/unit/:unitId/task/:taskId/note/:noteId" element={<NotePage />} />

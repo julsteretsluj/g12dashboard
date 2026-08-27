@@ -75,68 +75,81 @@ export default function ClassPage() {
 
       {course.id !== 'homeroom' && <ClassAcademics classId={id} ws={ws} update={update} />}
 
-      {course.id === 'homeroom' && (
-        <section className="card" style={{ marginBottom: 16 }}>
-          <h3>Tasks</h3>
-          {loose.length === 0 && <p className="meta">No tasks yet.</p>}
-          {loose.map((task) => (
-            <article key={task.id} className="assignment">
-              <div className="todo-add">
-                <EmojiPick
-                  size="sm"
-                  value={task.emoji}
-                  fallback="📌"
-                  onChange={(emoji) => patchTask(task.id, { emoji })}
-                  label="Task emoji"
-                />
-                <input
-                  type="checkbox"
-                  checked={task.done}
-                  onChange={() => patchTask(task.id, { done: !task.done })}
-                />
-                <input
-                  className="note-box"
-                  value={task.title}
-                  onChange={(e) => patchTask(task.id, { title: e.target.value })}
-                />
-                <button
-                  className="btn ghost"
-                  type="button"
-                  onClick={() =>
-                    update(dropTaskTree(ws, task.id))
-                  }
-                >
-                  Delete
-                </button>
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <NoteList
-                  notes={taskNotes(ws.notes, task.id)}
-                  hrefFor={(noteId) => `/class/${id}/task/${task.id}/note/${noteId}`}
-                  onCreate={(title) => {
-                    const noteId = newId()
-                    update({
-                      ...ws,
-                      notes: [...ws.notes, blankNote({ id: noteId, title, taskId: task.id })],
-                    })
-                    nav(`/class/${id}/task/${task.id}/note/${noteId}`)
-                  }}
-                  empty=""
-                />
-              </div>
-            </article>
-          ))}
-          <form onSubmit={addTask} style={{ marginTop: 12 }}>
+      <section className="card" style={{ marginBottom: 16 }}>
+        <h3>{course.id === 'homeroom' ? 'Tasks' : 'Homework'}</h3>
+        <p className="meta" style={{ marginTop: 0 }}>
+          {course.id === 'homeroom'
+            ? 'Homeroom to-dos. Dated ones also show in Homework center.'
+            : 'Class-level homework (unit assignments stay under Units). Use Next class for the due date.'}
+        </p>
+        {loose.length === 0 && <p className="meta">Nothing here yet.</p>}
+        {loose.map((task) => (
+          <article key={task.id} className="assignment">
             <div className="todo-add">
-              <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New task" />
-              <button className="btn" type="submit">
-                Add
+              <EmojiPick
+                size="sm"
+                value={task.emoji}
+                fallback="📌"
+                onChange={(emoji) => patchTask(task.id, { emoji })}
+                label="Task emoji"
+              />
+              <input
+                type="checkbox"
+                checked={task.done}
+                onChange={() => patchTask(task.id, { done: !task.done })}
+              />
+              <input
+                className="note-box"
+                value={task.title}
+                onChange={(e) => patchTask(task.id, { title: e.target.value })}
+              />
+              <button
+                className="btn ghost"
+                type="button"
+                onClick={() => update(dropTaskTree(ws, task.id))}
+              >
+                Delete
               </button>
             </div>
-            <DateField label="Due" value={taskDue} onChange={setTaskDue} />
-          </form>
-        </section>
-      )}
+            <div style={{ marginTop: 10 }}>
+              <DateField
+                label="Due"
+                value={task.due}
+                onChange={(due) => patchTask(task.id, { due })}
+                classId={id}
+              />
+            </div>
+            <div style={{ marginTop: 10 }}>
+              <NoteList
+                notes={taskNotes(ws.notes, task.id)}
+                hrefFor={(noteId) => `/class/${id}/task/${task.id}/note/${noteId}`}
+                onCreate={(title) => {
+                  const noteId = newId()
+                  update({
+                    ...ws,
+                    notes: [...ws.notes, blankNote({ id: noteId, title, taskId: task.id })],
+                  })
+                  nav(`/class/${id}/task/${task.id}/note/${noteId}`)
+                }}
+                empty=""
+              />
+            </div>
+          </article>
+        ))}
+        <form onSubmit={addTask} style={{ marginTop: 12 }}>
+          <div className="todo-add">
+            <input
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              placeholder={course.id === 'homeroom' ? 'New task' : 'New homework'}
+            />
+            <button className="btn" type="submit">
+              Add
+            </button>
+          </div>
+          <DateField label="Due" value={taskDue} onChange={setTaskDue} classId={id} />
+        </form>
+      </section>
 
       <div className="two">
         <section className="card">

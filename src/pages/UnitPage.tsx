@@ -182,7 +182,7 @@ export default function UnitPage() {
                 Add
               </button>
             </div>
-            <DateField label="Due" value={taskDue} onChange={setTaskDue} />
+            <DateField label="Due" value={taskDue} onChange={setTaskDue} classId={id} />
           </form>
         </section>
         <section className="card">

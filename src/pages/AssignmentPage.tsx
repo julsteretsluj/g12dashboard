@@ -84,7 +84,7 @@ export default function AssignmentPage() {
             placeholder="Title"
           />
         </div>
-        <DateField label="Due" value={task.due} onChange={(due) => patch({ due })} />
+        <DateField label="Due" value={task.due} onChange={(due) => patch({ due })} classId={id} />
         <textarea
           className="note-box"
           rows={4}
@@ -95,6 +95,7 @@ export default function AssignmentPage() {
         />
         <Subtasks
           items={steps}
+          classId={id}
           hrefFor={(stepId) => `/class/${id}/unit/${unitId}/task/${stepId}`}
           onAdd={(title, due) =>
             update({

@@ -47,6 +47,16 @@ export default function Home() {
 
         <ComingUp workspaces={studio.workspaces} />
 
+        <section className="card span-12">
+          <h3>Homework center</h3>
+          <p className="meta" style={{ marginTop: 0 }}>
+            All open assignments, next-class due dates, and a 24-hour email reminder before they’re due.
+          </p>
+          <Link className="btn" to="/homework" style={{ marginTop: 8 }}>
+            Open homework center
+          </Link>
+        </section>
+
         <RecentNotes workspaces={studio.workspaces} />
 
         <HomePractice />

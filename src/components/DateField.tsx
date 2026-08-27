@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { nextClassMeeting } from '../data/school'
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
@@ -22,10 +23,12 @@ export default function DateField({
   value,
   onChange,
   label = 'Date',
+  classId,
 }: {
   value: string
   onChange: (next: string) => void
   label?: string
+  classId?: string
 }) {
   const picked = parseIso(value)
   const today = new Date()
@@ -33,6 +36,7 @@ export default function DateField({
   const [view, setView] = useState(() =>
     picked ? { y: picked.y, m: picked.m } : { y: today.getFullYear(), m: today.getMonth() },
   )
+  const nextClass = useMemo(() => (classId ? nextClassMeeting(classId) : null), [classId])
 
   const cells = useMemo(() => {
     const first = new Date(view.y, view.m, 1).getDay()
@@ -65,6 +69,19 @@ export default function DateField({
           <span className="meta">{label}</span>
           <strong>{picked ? prettyDate(value) : 'Pick a date'}</strong>
         </button>
+        {classId && nextClass && (
+          <button
+            className="btn ghost"
+            type="button"
+            onClick={() => {
+              onChange(nextClass.iso)
+              setOpen(false)
+            }}
+            title={`${nextClass.day} ${nextClass.start}–${nextClass.end}`}
+          >
+            Next class
+          </button>
+        )}
         {value && (
           <button
             className="btn ghost"
@@ -78,6 +95,11 @@ export default function DateField({
           </button>
         )}
       </div>
+      {classId && nextClass && value === nextClass.iso && (
+        <p className="meta" style={{ margin: '6px 0 0' }}>
+          Due next {nextClass.day} class · {nextClass.start}–{nextClass.end}
+        </p>
+      )}
       {open && (
         <>
           <div className="date-field-nav">
@@ -102,11 +124,12 @@ export default function DateField({
               const iso = isoDate(view.y, view.m, d)
               const isPicked = value === iso
               const isToday = iso === todayIso
+              const isNext = nextClass?.iso === iso
               return (
                 <button
                   key={i}
                   type="button"
-                  className={`cal-cell date-day ${isPicked ? 'picked' : ''} ${isToday ? 'today' : ''}`}
+                  className={`cal-cell date-day ${isPicked ? 'picked' : ''} ${isToday ? 'today' : ''} ${isNext ? 'next-class' : ''}`}
                   onClick={() => {
                     onChange(iso)
                     setOpen(false)

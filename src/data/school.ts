@@ -192,6 +192,35 @@ export function formatCountdown(ms: number) {
   return `${m}:${pad2(sec)}`
 }
 
+/** Next timetable meeting for a class after `now` (Phnom Penh). */
+export function nextClassMeeting(classId: string, now = new Date()) {
+  const stamp = phnomClock(now)
+  const nowSec = stamp.hour * 3600 + stamp.minute * 60 + stamp.second
+  for (let offset = 0; offset <= 21; offset++) {
+    const cal = civilAddDays(stamp.year, stamp.month, stamp.day, offset)
+    if (!(days as readonly string[]).includes(cal.weekday)) continue
+    const day = cal.weekday as (typeof days)[number]
+    for (let i = 0; i < bells.length; i++) {
+      if (timetableCell(day, i) !== classId) continue
+      const startSec = minutesFromLabel(bells[i].start) * 60
+      if (offset === 0 && startSec <= nowSec) continue
+      const iso = `${cal.year}-${pad2(cal.month)}-${pad2(cal.day)}`
+      return {
+        iso,
+        day,
+        period: i,
+        start: bells[i].start,
+        end: bells[i].end,
+      }
+    }
+  }
+  return null
+}
+
+export function nextClassDueIso(classId: string, now = new Date()) {
+  return nextClassMeeting(classId, now)?.iso ?? ''
+}
+
 export const events = [
   { date: '2026-08-17', end: '2026-08-21', title: 'Academic Team Orientation', tag: 'staff' },
   { date: '2026-08-21', title: 'Orientation for new families SK–Grade 12 (no classes, offices open)', tag: 'start' },
