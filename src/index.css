@@ -944,6 +944,57 @@ textarea {
   box-shadow: inset 0 0 0 1.5px #007aff;
 }
 
+.date-day.is-focus:not(.picked) {
+  background: #eef5ff;
+}
+
+.date-day.has-class:not(.picked):not(.is-focus) {
+  font-weight: 600;
+}
+
+.date-day-classes {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.date-class-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.date-class-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--red);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.date-class-chip:hover {
+  background: #f2f2f7;
+}
+
+.date-class-chip.is-preferred {
+  box-shadow: inset 0 0 0 1.5px #007aff;
+}
+
+.date-class-chip small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 1px;
+}
+
 .homework-row {
   display: flex;
   align-items: flex-start;
@@ -978,6 +1029,59 @@ textarea {
 .homework-row .date-field {
   margin-top: 0;
   padding: 6px 8px;
+}
+
+.task-tag-pick,
+.work-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.task-tag-pick button,
+.work-filter button {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 980px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.task-tag-pick button.on,
+.work-filter button.on {
+  background: #eef5ff;
+  border-color: #007aff;
+  color: #007aff;
+}
+
+.work-filter {
+  margin: 12px 0 4px;
+}
+
+.work-tag-pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 980px;
+  background: #f2f2f7;
+  color: var(--muted);
+}
+
+.work-tag-pill.tag-homework {
+  background: #fff0f0;
+  color: var(--red);
+}
+
+.work-tag-pill.tag-classwork {
+  background: #eef5ff;
+  color: #007aff;
+}
+
+.homework-row-main .task-tag-pick {
+  margin: 8px 0;
 }
 
 .empty-day {

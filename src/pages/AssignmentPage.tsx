@@ -6,6 +6,7 @@ import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
 import EmojiPick from '../components/EmojiPick'
 import Subtasks from '../components/Subtasks'
+import TaskTagPick from '../components/TaskTagPick'
 import { blankNote, blankTask, childTasks, dropTaskTree, newId, taskNotes } from '../lib/workspace'
 
 export default function AssignmentPage() {
@@ -58,7 +59,7 @@ export default function AssignmentPage() {
             label="Assignment emoji"
           />
           <div>
-            <p className="kicker">{parent ? 'Sub-task' : 'Assignment'}</p>
+            <p className="kicker">{parent ? 'Sub-task' : task.tag === 'classwork' ? 'Class work' : 'Homework'}</p>
             <h2 style={{ margin: 0, fontSize: 32, letterSpacing: '-0.04em' }}>{task.title || 'Untitled'}</h2>
           </div>
         </div>
@@ -84,6 +85,7 @@ export default function AssignmentPage() {
             placeholder="Title"
           />
         </div>
+        {!parent && <TaskTagPick value={task.tag} onChange={(tag) => patch({ tag })} />}
         <DateField label="Due" value={task.due} onChange={(due) => patch({ due })} classId={id} />
         <textarea
           className="note-box"
@@ -108,6 +110,7 @@ export default function AssignmentPage() {
                   due,
                   unitId,
                   parentId: task.id,
+                  tag: task.tag,
                 }),
               ],
             })

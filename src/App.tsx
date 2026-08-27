@@ -57,7 +57,7 @@ export default function App() {
           <NavLink to="/timetable">Timetable</NavLink>
           <NavLink to="/calendar">Calendar</NavLink>
           <NavLink to="/check-in">Check-in</NavLink>
-          <NavLink to="/homework">Homework</NavLink>
+          <NavLink to="/homework">Work</NavLink>
           <NavLink to="/studio">Whimsy lab</NavLink>
           <div className="nav-label">Classes</div>
           {classes.map((c) => (

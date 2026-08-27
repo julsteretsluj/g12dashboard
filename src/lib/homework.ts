@@ -1,5 +1,5 @@
 import { classes } from '../data/school'
-import { hydrateWorkspace, type Workspace } from './workspace'
+import { hydrateWorkspace, workTagLabel, type WorkTag, type Workspace } from './workspace'
 import { subjectEmoji } from './emoji'
 import { phnomPenhIso } from './dueMail'
 
@@ -17,6 +17,8 @@ export type HomeworkItem = {
   dueTomorrow: boolean
   unitName: string
   taskId: string
+  tag: WorkTag
+  tagLabel: string
 }
 
 export function homeworkFromWorkspaces(
@@ -44,7 +46,7 @@ export function homeworkFromWorkspaces(
       const due = /^\d{4}-\d{2}-\d{2}$/.test(task.due) ? task.due : ''
       items.push({
         key: `${course.id}:${task.id}`,
-        title: task.title || 'Untitled homework',
+        title: task.title || 'Untitled',
         due,
         href,
         classId: course.id,
@@ -56,6 +58,8 @@ export function homeworkFromWorkspaces(
         dueTomorrow: Boolean(due && !task.done && due === tomorrow),
         unitName: unit?.name ?? '',
         taskId: task.id,
+        tag: task.tag,
+        tagLabel: workTagLabel(task.tag),
       })
     }
   }

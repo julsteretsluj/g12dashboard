@@ -221,6 +221,46 @@ export function nextClassDueIso(classId: string, now = new Date()) {
   return nextClassMeeting(classId, now)?.iso ?? ''
 }
 
+/** Classes that meet on a civil date (Phnom Penh weekday → MH timetable). */
+export function classesOnIso(iso: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return []
+  const weekday = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Phnom_Penh',
+    weekday: 'short',
+  }).format(new Date(`${iso}T12:00:00+07:00`))
+  if (!(days as readonly string[]).includes(weekday)) return []
+  const day = weekday as (typeof days)[number]
+  const out: {
+    id: string
+    short: string
+    emoji: string
+    color: string
+    day: (typeof days)[number]
+    period: number
+    start: string
+    end: string
+  }[] = []
+  const seen = new Set<string>()
+  for (let i = 0; i < bells.length; i++) {
+    const cell = timetableCell(day, i)
+    if (!cell || cell === 'lunch' || seen.has(cell)) continue
+    const course = classes.find((c) => c.id === cell)
+    if (!course) continue
+    seen.add(cell)
+    out.push({
+      id: course.id,
+      short: course.short,
+      emoji: course.emoji,
+      color: course.color,
+      day,
+      period: i,
+      start: bells[i].start,
+      end: bells[i].end,
+    })
+  }
+  return out
+}
+
 export const events = [
   { date: '2026-08-17', end: '2026-08-21', title: 'Academic Team Orientation', tag: 'staff' },
   { date: '2026-08-21', title: 'Orientation for new families SK–Grade 12 (no classes, offices open)', tag: 'start' },

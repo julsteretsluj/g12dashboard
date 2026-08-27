@@ -9,6 +9,21 @@ export type DocItem = {
   mime?: string
 }
 
+export type WorkTag = 'homework' | 'classwork'
+
+export const workTags: { id: WorkTag; label: string }[] = [
+  { id: 'homework', label: 'Homework' },
+  { id: 'classwork', label: 'Class work' },
+]
+
+export function normalizeWorkTag(value: unknown): WorkTag {
+  return value === 'classwork' ? 'classwork' : 'homework'
+}
+
+export function workTagLabel(tag: WorkTag) {
+  return workTags.find((t) => t.id === tag)?.label ?? 'Homework'
+}
+
 export type TaskItem = {
   id: string
   title: string
@@ -18,6 +33,7 @@ export type TaskItem = {
   unitId: string
   parentId: string
   emoji: string
+  tag: WorkTag
   attachments: DocItem[]
   submissions: DocItem[]
 }
@@ -97,6 +113,7 @@ export function hydrateWorkspace(parsed: Partial<Workspace>): Workspace {
     unitId: t.unitId ?? '',
     parentId: t.parentId ?? '',
     emoji: t.emoji ?? '',
+    tag: normalizeWorkTag((t as TaskItem).tag),
     attachments: t.attachments ?? [],
     submissions: t.submissions ?? [],
   }))
@@ -156,6 +173,7 @@ export function testNotes(notes: NoteItem[], testId: string) {
 }
 
 export function blankTask(partial: Pick<TaskItem, 'id' | 'title'> & Partial<TaskItem>): TaskItem {
+  const { tag, ...rest } = partial
   return {
     due: '',
     note: '',
@@ -165,7 +183,8 @@ export function blankTask(partial: Pick<TaskItem, 'id' | 'title'> & Partial<Task
     emoji: '',
     attachments: [],
     submissions: [],
-    ...partial,
+    ...rest,
+    tag: normalizeWorkTag(tag ?? 'homework'),
   }
 }
 

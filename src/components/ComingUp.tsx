@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { prettyDate } from './DateField'
 import { comingFromWorkspaces, type ComingItem } from '../lib/upcoming'
+import { workTagLabel } from '../lib/workspace'
 import type { Workspace } from '../lib/workspace'
 
 export default function ComingUp({ workspaces }: { workspaces: Record<string, Workspace> }) {
@@ -23,7 +24,8 @@ export default function ComingUp({ workspaces }: { workspaces: Record<string, Wo
 
 function ComingRow({ item }: { item: ComingItem }) {
   const when = item.overdue ? `Overdue · ${prettyDate(item.date)}` : prettyDate(item.date)
-  const kind = item.kind === 'test' ? 'Test' : 'Assignment'
+  const kind =
+    item.kind === 'test' ? 'Test' : item.workTag ? workTagLabel(item.workTag) : 'Assignment'
   return (
     <Link className="coming-row" to={item.href} style={{ borderLeftColor: item.color }}>
       <span className="coming-emoji" aria-hidden>

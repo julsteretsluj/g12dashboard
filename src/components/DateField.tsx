@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { nextClassMeeting } from '../data/school'
+import { classesOnIso, nextClassMeeting } from '../data/school'
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
@@ -36,7 +36,9 @@ export default function DateField({
   const [view, setView] = useState(() =>
     picked ? { y: picked.y, m: picked.m } : { y: today.getFullYear(), m: today.getMonth() },
   )
+  const [focusIso, setFocusIso] = useState(value || '')
   const nextClass = useMemo(() => (classId ? nextClassMeeting(classId) : null), [classId])
+  const dayClasses = useMemo(() => (focusIso ? classesOnIso(focusIso) : []), [focusIso])
 
   const cells = useMemo(() => {
     const first = new Date(view.y, view.m, 1).getDay()
@@ -54,6 +56,12 @@ export default function DateField({
     })
   }
 
+  function pickDate(iso: string) {
+    onChange(iso)
+    setFocusIso(iso)
+    setOpen(false)
+  }
+
   return (
     <div className={`date-field ${open ? 'is-open' : ''}`}>
       <div className="date-field-head">
@@ -62,7 +70,10 @@ export default function DateField({
           type="button"
           aria-expanded={open}
           onClick={() => {
-            if (!open && picked) setView({ y: picked.y, m: picked.m })
+            if (!open) {
+              if (picked) setView({ y: picked.y, m: picked.m })
+              setFocusIso(value || todayIso)
+            }
             setOpen((v) => !v)
           }}
         >
@@ -73,10 +84,7 @@ export default function DateField({
           <button
             className="btn ghost"
             type="button"
-            onClick={() => {
-              onChange(nextClass.iso)
-              setOpen(false)
-            }}
+            onClick={() => pickDate(nextClass.iso)}
             title={`${nextClass.day} ${nextClass.start}–${nextClass.end}`}
           >
             Next class
@@ -88,6 +96,7 @@ export default function DateField({
             type="button"
             onClick={() => {
               onChange('')
+              setFocusIso('')
               setOpen(false)
             }}
           >
@@ -125,20 +134,59 @@ export default function DateField({
               const isPicked = value === iso
               const isToday = iso === todayIso
               const isNext = nextClass?.iso === iso
+              const isFocus = focusIso === iso
+              const hasClasses = classesOnIso(iso).length > 0
               return (
                 <button
                   key={i}
                   type="button"
-                  className={`cal-cell date-day ${isPicked ? 'picked' : ''} ${isToday ? 'today' : ''} ${isNext ? 'next-class' : ''}`}
-                  onClick={() => {
-                    onChange(iso)
-                    setOpen(false)
-                  }}
+                  className={`cal-cell date-day ${isPicked ? 'picked' : ''} ${isToday ? 'today' : ''} ${isNext ? 'next-class' : ''} ${isFocus ? 'is-focus' : ''} ${hasClasses ? 'has-class' : ''}`}
+                  onClick={() => setFocusIso(iso)}
                 >
                   {d}
                 </button>
               )
             })}
+          </div>
+
+          <div className="date-day-classes">
+            <p className="meta" style={{ margin: 0 }}>
+              {focusIso
+                ? `Classes on ${prettyDate(focusIso)} — tap one to set due`
+                : 'Tap a day, then a class'}
+            </p>
+            {focusIso && dayClasses.length === 0 && (
+              <p className="meta" style={{ margin: '6px 0 0' }}>
+                No MH classes that day (weekend / blank).
+              </p>
+            )}
+            {dayClasses.length > 0 && (
+              <div className="date-class-chips">
+                {dayClasses.map((c) => (
+                  <button
+                    key={`${c.id}-${c.period}`}
+                    type="button"
+                    className={`date-class-chip ${classId === c.id ? 'is-preferred' : ''}`}
+                    style={{ borderLeftColor: c.color }}
+                    onClick={() => pickDate(focusIso)}
+                    title={`${c.day} ${c.start}–${c.end}`}
+                  >
+                    <span aria-hidden>{c.emoji}</span>
+                    <span>
+                      {c.short}
+                      <small>
+                        {c.start}–{c.end}
+                      </small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {focusIso && (
+              <button className="btn ghost" type="button" style={{ marginTop: 8 }} onClick={() => pickDate(focusIso)}>
+                Use {prettyDate(focusIso)} only
+              </button>
+            )}
           </div>
         </>
       )}

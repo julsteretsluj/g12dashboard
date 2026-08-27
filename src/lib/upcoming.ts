@@ -1,5 +1,5 @@
 import { classes } from '../data/school'
-import { hydrateWorkspace, type Workspace } from './workspace'
+import { hydrateWorkspace, type WorkTag, type Workspace } from './workspace'
 import { subjectEmoji } from './emoji'
 
 function isoDate(year: number, month: number, day: number) {
@@ -17,6 +17,7 @@ export type ComingItem = {
   color: string
   emoji: string
   overdue: boolean
+  workTag?: WorkTag
 }
 
 export function todayIso(now = new Date()) {
@@ -52,6 +53,7 @@ export function comingFromWorkspaces(workspaces: Record<string, Workspace>, now 
         color: course.color,
         emoji: task.emoji || classEmoji,
         overdue: task.due < today,
+        workTag: task.tag,
       })
     }
 

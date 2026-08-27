@@ -51,6 +51,7 @@ export function assignmentsDueTomorrow(
     if (!ws) continue
     for (const task of ws.tasks) {
       if (task.done || task.due !== tomorrow) continue
+      if (task.tag !== 'homework') continue
       const name = task.title || 'Untitled assignment'
       const parent = task.parentId ? ws.tasks.find((t) => t.id === task.parentId) : undefined
       const title = parent?.title ? `${parent.title} · ${name}` : name

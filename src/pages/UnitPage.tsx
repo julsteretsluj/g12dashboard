@@ -6,6 +6,7 @@ import { cloneNeuronPractice } from '../data/practiceNeurons'
 import DateField, { prettyDate } from '../components/DateField'
 import NoteList from '../components/NoteList'
 import EmojiPick from '../components/EmojiPick'
+import TaskTagPick from '../components/TaskTagPick'
 import { useState, type FormEvent } from 'react'
 
 export default function UnitPage() {
@@ -16,6 +17,7 @@ export default function UnitPage() {
   const unit = ws.units.find((u) => u.id === unitId)
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDue, setTaskDue] = useState('')
+  const [taskTag, setTaskTag] = useState<'homework' | 'classwork'>('homework')
   const [testName, setTestName] = useState('')
   const [testDate, setTestDate] = useState('')
   const tasks = ws.tasks.filter((t) => t.unitId === unitId && !t.parentId)
@@ -50,6 +52,7 @@ export default function UnitPage() {
           title: taskTitle.trim(),
           due: taskDue,
           unitId,
+          tag: taskTag,
         }),
       ],
     })
@@ -168,6 +171,8 @@ export default function UnitPage() {
                   {t.title || 'Untitled'}
                 </h4>
                 <p>
+                  {t.tag === 'classwork' ? 'Class work' : 'Homework'}
+                  {' · '}
                   {t.done ? 'Settled' : t.due ? `Due ${prettyDate(t.due)}` : 'Open'}
                   {steps.length ? ` · ${settled}/${steps.length} sub-tasks` : ''}
                 </p>
@@ -176,7 +181,8 @@ export default function UnitPage() {
             )
           })}
           <form onSubmit={addTask} style={{ marginTop: 12 }}>
-            <div className="todo-add">
+            <TaskTagPick value={taskTag} onChange={setTaskTag} />
+            <div className="todo-add" style={{ marginTop: 10 }}>
               <input value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} placeholder="New assignment" />
               <button className="btn" type="submit">
                 Add
