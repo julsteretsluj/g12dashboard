@@ -218,6 +218,83 @@ export function dropTaskTree(ws: Workspace, rootId: string): Workspace {
   }
 }
 
+export type DocLocation =
+  | { scope: 'library' }
+  | { scope: 'task'; taskId: string; field: 'attachments' | 'submissions' }
+  | { scope: 'note'; noteId: string }
+
+export type DocMoveTarget = { label: string; location: DocLocation }
+
+export function docLocationKey(loc: DocLocation): string {
+  if (loc.scope === 'library') return 'library'
+  if (loc.scope === 'note') return `note:${loc.noteId}`
+  return `task:${loc.taskId}:${loc.field}`
+}
+
+export function docsAt(ws: Workspace, loc: DocLocation): DocItem[] {
+  if (loc.scope === 'library') return ws.library
+  if (loc.scope === 'note') {
+    const note = ws.notes.find((n) => n.id === loc.noteId)
+    return note?.attachments ?? []
+  }
+  const task = ws.tasks.find((t) => t.id === loc.taskId)
+  return task ? task[loc.field] : []
+}
+
+export function withDocsAt(ws: Workspace, loc: DocLocation, items: DocItem[]): Workspace {
+  if (loc.scope === 'library') return { ...ws, library: items }
+  if (loc.scope === 'note') {
+    return {
+      ...ws,
+      notes: ws.notes.map((n) => (n.id === loc.noteId ? { ...n, attachments: items } : n)),
+    }
+  }
+  return {
+    ...ws,
+    tasks: ws.tasks.map((t) => (t.id === loc.taskId ? { ...t, [loc.field]: items } : t)),
+  }
+}
+
+export function moveDoc(ws: Workspace, item: DocItem, from: DocLocation, to: DocLocation): Workspace {
+  if (docLocationKey(from) === docLocationKey(to)) return ws
+  const moved = { ...item, id: newId() }
+  let next = withDocsAt(ws, from, docsAt(ws, from).filter((d) => d.id !== item.id))
+  next = withDocsAt(next, to, [...docsAt(next, to), moved])
+  return next
+}
+
+export function buildMoveTargets(ws: Workspace, from: DocLocation): DocMoveTarget[] {
+  const fromKey = docLocationKey(from)
+  const targets: DocMoveTarget[] = []
+
+  if (fromKey !== 'library') {
+    targets.push({ label: 'Class library', location: { scope: 'library' } })
+  }
+
+  for (const task of ws.tasks) {
+    for (const field of ['attachments', 'submissions'] as const) {
+      const location: DocLocation = { scope: 'task', taskId: task.id, field }
+      if (docLocationKey(location) === fromKey) continue
+      const unit = task.unitId ? ws.units.find((u) => u.id === task.unitId) : undefined
+      const title = task.title || (task.parentId ? 'Sub-task' : 'Assignment')
+      const prefix = unit ? `${unit.name} · ` : ''
+      const suffix = field === 'submissions' ? ' · submissions' : ''
+      targets.push({ label: `${prefix}${title}${suffix}`, location })
+    }
+  }
+
+  for (const note of ws.notes) {
+    const location: DocLocation = { scope: 'note', noteId: note.id }
+    if (docLocationKey(location) === fromKey) continue
+    const task = note.taskId ? ws.tasks.find((t) => t.id === note.taskId) : undefined
+    const title = note.title || 'Untitled note'
+    const prefix = task ? `${task.title || 'Assignment'} · ` : ''
+    targets.push({ label: `${prefix}${title}`, location })
+  }
+
+  return targets
+}
+
 export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<NoteItem>): NoteItem {
   const now = new Date()
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`

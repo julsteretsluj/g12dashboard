@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { type FormEvent, useState } from 'react'
 import DocShelf from '../components/DocShelf'
-import { blankNote, blankTask, classNotes, dropTaskTree, newId, taskNotes, type TaskItem } from '../lib/workspace'
+import { blankNote, blankTask, buildMoveTargets, classNotes, dropTaskTree, moveDoc, newId, taskNotes, type TaskItem } from '../lib/workspace'
 import { useWorkspace } from '../lib/useWorkspace'
 import ClassAcademics from '../components/ClassAcademics'
 import DateField from '../components/DateField'
@@ -160,7 +160,13 @@ export default function ClassPage() {
       <div className="two">
         <section className="card">
           <h3>Class library</h3>
-          <DocShelf items={ws.library} onChange={(library) => update({ ...ws, library })} addLabel="Library" />
+          <DocShelf
+            items={ws.library}
+            onChange={(library) => update({ ...ws, library })}
+            addLabel="Library"
+            moveTargets={buildMoveTargets(ws, { scope: 'library' })}
+            onMove={(item, to) => update(moveDoc(ws, item, { scope: 'library' }, to))}
+          />
         </section>
         <section className="card">
           <h3>Notes</h3>

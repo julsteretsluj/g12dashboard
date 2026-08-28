@@ -7,7 +7,7 @@ import NoteList from '../components/NoteList'
 import EmojiPick from '../components/EmojiPick'
 import Subtasks from '../components/Subtasks'
 import TaskTagPick from '../components/TaskTagPick'
-import { blankNote, blankTask, childTasks, dropTaskTree, newId, taskNotes } from '../lib/workspace'
+import { blankNote, blankTask, buildMoveTargets, childTasks, dropTaskTree, moveDoc, newId, taskNotes } from '../lib/workspace'
 
 export default function AssignmentPage() {
   const { id, unitId, taskId } = useParams()
@@ -144,12 +144,16 @@ export default function AssignmentPage() {
           items={task.attachments}
           onChange={(attachments) => patch({ attachments })}
           addLabel="Task"
+          moveTargets={buildMoveTargets(ws, { scope: 'task', taskId: task.id, field: 'attachments' })}
+          onMove={(item, to) => update(moveDoc(ws, item, { scope: 'task', taskId: task.id, field: 'attachments' }, to))}
         />
         <h3 style={{ marginTop: 18 }}>Submissions</h3>
         <DocShelf
           items={task.submissions}
           onChange={(submissions) => patch({ submissions })}
           addLabel="Submission"
+          moveTargets={buildMoveTargets(ws, { scope: 'task', taskId: task.id, field: 'submissions' })}
+          onMove={(item, to) => update(moveDoc(ws, item, { scope: 'task', taskId: task.id, field: 'submissions' }, to))}
         />
         <button
           className="btn ghost"

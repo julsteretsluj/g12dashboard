@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import type { DocItem } from '../lib/workspace'
-import { newId } from '../lib/workspace'
+import type { DocItem, DocLocation, DocMoveTarget } from '../lib/workspace'
+import { docLocationKey, newId } from '../lib/workspace'
 import { deleteBlob, embedKind, embeddableUrl, getBlob, putBlob } from '../lib/files'
 
 type Props = {
   items: DocItem[]
   onChange: (next: DocItem[]) => void
   addLabel?: string
+  moveTargets?: DocMoveTarget[]
+  onMove?: (item: DocItem, to: DocLocation) => void
 }
 
-export default function DocShelf({ items, onChange, addLabel = 'Add' }: Props) {
+export default function DocShelf({ items, onChange, addLabel = 'Add', moveTargets, onMove }: Props) {
   const [linkName, setLinkName] = useState('')
   const [linkUrl, setLinkUrl] = useState('')
   const [awaitingDoc, setAwaitingDoc] = useState(false)
+  const [movingId, setMovingId] = useState<string | null>(null)
   const urlRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState<string | null>(null)
   const [blobUrls, setBlobUrls] = useState<Record<string, string>>({})
@@ -99,10 +102,44 @@ export default function DocShelf({ items, onChange, addLabel = 'Add' }: Props) {
               <button className="btn ghost" type="button" onClick={() => setOpen(open === item.id ? null : item.id)}>
                 {open === item.id ? 'Hide' : 'Embed'}
               </button>
+              {moveTargets && moveTargets.length > 0 && onMove && (
+                <button
+                  className="btn ghost"
+                  type="button"
+                  onClick={() => setMovingId(movingId === item.id ? null : item.id)}
+                >
+                  Move
+                </button>
+              )}
               <button className="btn ghost" type="button" onClick={() => void remove(item)}>
                 Remove
               </button>
             </div>
+            {movingId === item.id && moveTargets && onMove && (
+              <label className="doc-move">
+                <span className="meta">Move to</span>
+                <select
+                  className="note-box"
+                  value=""
+                  onChange={(e) => {
+                    const target = moveTargets.find((t) => docLocationKey(t.location) === e.target.value)
+                    if (target) {
+                      onMove(item, target.location)
+                      setMovingId(null)
+                    }
+                  }}
+                >
+                  <option value="" disabled>
+                    Choose destination…
+                  </option>
+                  {moveTargets.map((target) => (
+                    <option key={docLocationKey(target.location)} value={docLocationKey(target.location)}>
+                      {target.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             {open === item.id && src && (
               <div className={`embed-frame ${embedKind(src, item.mime)}`}>
                 {isImage ? (

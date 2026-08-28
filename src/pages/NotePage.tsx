@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
-import type { NoteItem } from '../lib/workspace'
+import { buildMoveTargets, moveDoc, type NoteItem } from '../lib/workspace'
 import EmojiPick from '../components/EmojiPick'
 import DateField from '../components/DateField'
 import NoteEditor from '../components/NoteEditor'
@@ -124,6 +124,8 @@ export default function NotePage() {
             items={current.attachments}
             onChange={(attachments) => patch({ attachments })}
             addLabel="Note"
+            moveTargets={buildMoveTargets(ws, { scope: 'note', noteId: current.id })}
+            onMove={(item, to) => update(moveDoc(ws, item, { scope: 'note', noteId: current.id }, to))}
           />
         </div>
         <button
