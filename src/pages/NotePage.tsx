@@ -5,6 +5,8 @@ import type { NoteItem } from '../lib/workspace'
 import EmojiPick from '../components/EmojiPick'
 import DateField from '../components/DateField'
 import NoteEditor from '../components/NoteEditor'
+import DocShelf from '../components/DocShelf'
+import { deleteBlob } from '../lib/files'
 
 export default function NotePage() {
   const { id, unitId, taskId, testId, noteId } = useParams()
@@ -116,11 +118,22 @@ export default function NotePage() {
           <span className="meta">Notes</span>
           <NoteEditor key={current.id} html={current.body} onChange={(body) => patch({ body })} />
         </div>
+        <div className="field" style={{ marginTop: 18 }}>
+          <span className="meta">Documents & links</span>
+          <DocShelf
+            items={current.attachments}
+            onChange={(attachments) => patch({ attachments })}
+            addLabel="Note"
+          />
+        </div>
         <button
           className="btn ghost"
           type="button"
           style={{ marginTop: 12 }}
           onClick={() => {
+            void Promise.all(
+              current.attachments.map((item) => (item.fileId ? deleteBlob(item.fileId) : Promise.resolve())),
+            )
             update({ ...ws, notes: ws.notes.filter((n) => n.id !== current.id) })
             nav(back)
           }}
