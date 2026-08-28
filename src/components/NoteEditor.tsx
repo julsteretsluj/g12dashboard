@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { sanitizeNoteHtml, toNoteHtml } from '../lib/noteHtml'
 
 function Icon({ children }: { children: ReactNode }) {
@@ -9,10 +9,21 @@ function Icon({ children }: { children: ReactNode }) {
   )
 }
 
-const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] = [
+type Action = {
+  id: string
+  label: string
+  cmd: string
+  arg?: string
+  icon: ReactNode
+  active?: () => boolean
+}
+
+const actions: Action[] = [
   {
+    id: 'bold',
     label: 'Bold',
     cmd: 'bold',
+    active: () => document.queryCommandState('bold'),
     icon: (
       <Icon>
         <text x="8" y="12.2" textAnchor="middle" fontSize="12" fontWeight="700" fontFamily="-apple-system, system-ui, sans-serif" fill="currentColor">
@@ -22,8 +33,10 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'italic',
     label: 'Italic',
     cmd: 'italic',
+    active: () => document.queryCommandState('italic'),
     icon: (
       <Icon>
         <text x="8" y="12.2" textAnchor="middle" fontSize="12" fontStyle="italic" fontWeight="600" fontFamily="-apple-system, system-ui, sans-serif" fill="currentColor">
@@ -33,8 +46,10 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'underline',
     label: 'Underline',
     cmd: 'underline',
+    active: () => document.queryCommandState('underline'),
     icon: (
       <Icon>
         <text x="8" y="11.2" textAnchor="middle" fontSize="11" fontWeight="600" fontFamily="-apple-system, system-ui, sans-serif" fill="currentColor">
@@ -45,9 +60,14 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'heading',
     label: 'Heading',
     cmd: 'formatBlock',
     arg: '<h3>',
+    active: () => {
+      const block = document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g, '')
+      return block === 'h3' || block === 'h2' || block === 'h1'
+    },
     icon: (
       <Icon>
         <text x="8" y="12.2" textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="-apple-system, system-ui, sans-serif" fill="currentColor">
@@ -57,8 +77,10 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'bullets',
     label: 'Bullets',
     cmd: 'insertUnorderedList',
+    active: () => document.queryCommandState('insertUnorderedList'),
     icon: (
       <Icon>
         <circle cx="3.2" cy="4" r="1.15" fill="currentColor" />
@@ -69,8 +91,10 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'numbers',
     label: 'Numbers',
     cmd: 'insertOrderedList',
+    active: () => document.queryCommandState('insertOrderedList'),
     icon: (
       <Icon>
         <text x="1.2" y="5.2" fontSize="5.5" fontWeight="700" fontFamily="-apple-system, system-ui, sans-serif" fill="currentColor">
@@ -87,6 +111,7 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'indent',
     label: 'Indent',
     cmd: 'indent',
     icon: (
@@ -97,6 +122,7 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'outdent',
     label: 'Outdent',
     cmd: 'outdent',
     icon: (
@@ -107,9 +133,14 @@ const actions: { label: string; cmd: string; arg?: string; icon: ReactNode }[] =
     ),
   },
   {
+    id: 'body',
     label: 'Body',
     cmd: 'formatBlock',
     arg: '<p>',
+    active: () => {
+      const block = document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g, '')
+      return block === 'p' || block === 'div' || block === ''
+    },
     icon: (
       <Icon>
         <path d="M3 3.5h10M3 6.5h10M3 9.5h7M3 12.5h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -126,6 +157,21 @@ export default function NoteEditor({
   onChange: (next: string) => void
 }) {
   const canvas = useRef<HTMLDivElement>(null)
+  const [pressed, setPressed] = useState<Record<string, boolean>>({})
+
+  const syncPressed = useCallback(() => {
+    const el = canvas.current
+    const selection = document.getSelection()
+    if (!el || !selection?.anchorNode || !el.contains(selection.anchorNode)) {
+      setPressed({})
+      return
+    }
+    const next: Record<string, boolean> = {}
+    for (const action of actions) {
+      if (action.active) next[action.id] = action.active()
+    }
+    setPressed(next)
+  }, [])
 
   useEffect(() => {
     const el = canvas.current
@@ -133,10 +179,16 @@ export default function NoteEditor({
     el.innerHTML = toNoteHtml(html)
   }, [])
 
+  useEffect(() => {
+    document.addEventListener('selectionchange', syncPressed)
+    return () => document.removeEventListener('selectionchange', syncPressed)
+  }, [syncPressed])
+
   function emit() {
     const el = canvas.current
     if (!el) return
     onChange(sanitizeNoteHtml(el.innerHTML))
+    syncPressed()
   }
 
   function run(cmd: string, arg?: string) {
@@ -156,10 +208,11 @@ export default function NoteEditor({
       <div className="note-toolbar" role="toolbar" aria-label="Formatting">
         {actions.map((a) => (
           <button
-            key={a.label}
-            className="btn ghost note-tool"
+            key={a.id}
+            className={`btn ghost note-tool${pressed[a.id] ? ' is-active' : ''}`}
             type="button"
             title={a.label}
+            aria-pressed={pressed[a.id] ?? false}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => run(a.cmd, a.arg)}
           >
@@ -178,6 +231,9 @@ export default function NoteEditor({
         data-placeholder="Write here…"
         onInput={emit}
         onBlur={emit}
+        onKeyUp={syncPressed}
+        onMouseUp={syncPressed}
+        onFocus={syncPressed}
         onKeyDown={onKeyDown}
       />
     </div>
