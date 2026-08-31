@@ -83,6 +83,7 @@ export default function App() {
           <Route path="/check-in" element={<CheckInPage />} />
           <Route path="/homework" element={<HomeworkPage />} />
           <Route path="/studio" element={<Studio />} />
+          <Route path="/practice/:id/:setId" element={<PracticePage />} />
           <Route path="/practice/:id" element={<PracticePage />} />
           <Route path="/class/:id/unit/:unitId/task/:taskId/note/:noteId" element={<NotePage />} />
           <Route path="/class/:id/unit/:unitId/test/:testId/note/:noteId" element={<NotePage />} />

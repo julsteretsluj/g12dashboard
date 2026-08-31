@@ -77,6 +77,8 @@ export type NoteItem = {
   testId: string
   emoji: string
   attachments: DocItem[]
+  practiceHub: boolean
+  practiceBySet: Record<string, PracticeQ[]>
 }
 
 export type Workspace = {
@@ -135,6 +137,8 @@ export function hydrateWorkspace(parsed: Partial<Workspace>): Workspace {
     topic: n.topic ?? '',
     date: n.date ?? '',
     attachments: n.attachments ?? [],
+    practiceHub: n.practiceHub ?? false,
+    practiceBySet: n.practiceBySet ?? {},
   }))
   base.classEmoji = base.classEmoji ?? ''
   return base
@@ -298,7 +302,7 @@ export function buildMoveTargets(ws: Workspace, from: DocLocation): DocMoveTarge
 export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<NoteItem>): NoteItem {
   const now = new Date()
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  const { attachments, ...rest } = partial
+  const { attachments, practiceBySet, ...rest } = partial
   return {
     body: '',
     topic: '',
@@ -307,8 +311,10 @@ export function blankNote(partial: Pick<NoteItem, 'id' | 'title'> & Partial<Note
     taskId: '',
     testId: '',
     emoji: '',
+    practiceHub: false,
     ...rest,
     attachments: attachments ?? [],
+    practiceBySet: practiceBySet ?? {},
   }
 }
 

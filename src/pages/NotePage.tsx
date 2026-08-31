@@ -6,6 +6,7 @@ import EmojiPick from '../components/EmojiPick'
 import DateField from '../components/DateField'
 import NoteEditor from '../components/NoteEditor'
 import DocShelf from '../components/DocShelf'
+import NotePractice from '../components/NotePractice'
 import { deleteBlob } from '../lib/files'
 
 export default function NotePage() {
@@ -118,6 +119,7 @@ export default function NotePage() {
           <span className="meta">Notes</span>
           <NoteEditor key={current.id} html={current.body} onChange={(body) => patch({ body })} />
         </div>
+        <NotePractice classId={id} note={current} onPatch={patch} />
         <div className="field" style={{ marginTop: 18 }}>
           <span className="meta">Documents & links</span>
           <DocShelf

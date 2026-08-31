@@ -1227,6 +1227,25 @@ table.tt td.now-hit {
   overflow: hidden;
 }
 
+.class-tile-btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  border: none;
+}
+
+.class-tile-btn:hover {
+  background: #fff;
+}
+
+.note-practice .practice:first-of-type {
+  margin-top: 10px;
+  padding-top: 0;
+  border-top: none;
+}
+
 .coming-list {
   display: flex;
   flex-direction: column;
@@ -1597,6 +1616,42 @@ select.note-box {
   margin: 8px 0 0;
   font-size: 13px;
   color: var(--muted);
+}
+
+.practice-sets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.practice-set-tile {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fafafa;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.practice-set-tile:hover {
+  border-color: rgba(0, 122, 255, 0.35);
+  background: #fff;
+}
+
+.practice-set-tile h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+}
+
+.practice-set-blurb {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .embed {

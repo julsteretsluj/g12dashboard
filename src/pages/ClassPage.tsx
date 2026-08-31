@@ -1,9 +1,10 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 import DocShelf from '../components/DocShelf'
 import { blankNote, blankTask, buildMoveTargets, classNotes, dropTaskTree, moveDoc, newId, taskNotes, type TaskItem } from '../lib/workspace'
 import { useWorkspace } from '../lib/useWorkspace'
+import { ensurePracticeHubNote, isPracticeSubject, practiceHubNote } from '../lib/practiceNotes'
 import ClassAcademics from '../components/ClassAcademics'
 import DateField from '../components/DateField'
 import NoteList from '../components/NoteList'
@@ -19,6 +20,14 @@ export default function ClassPage() {
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDue, setTaskDue] = useState('')
   const [taskTag, setTaskTag] = useState<'homework' | 'classwork'>('homework')
+
+  useEffect(() => {
+    if (!id || !isPracticeSubject(id)) return
+    if (practiceHubNote(ws)) return
+    const { ws: next } = ensurePracticeHubNote(ws, id, newId)
+    update(next)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
 
   if (!course || !id) {
     return (
