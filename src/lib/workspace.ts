@@ -178,6 +178,42 @@ export function testNotes(notes: NoteItem[], testId: string) {
   return notes.filter((n) => n.testId === testId)
 }
 
+export type NoteMoveTarget = { label: string; unitId: string }
+
+export function noteLocationKey(note: NoteItem): string {
+  if (note.taskId) return `task:${note.taskId}`
+  if (note.testId) return `test:${note.testId}`
+  if (note.unitId) return `unit:${note.unitId}`
+  return 'class'
+}
+
+export function buildNoteMoveTargets(ws: Workspace, note: NoteItem): NoteMoveTarget[] {
+  const loc = noteLocationKey(note)
+  const targets: NoteMoveTarget[] = []
+
+  if (loc !== 'class') {
+    targets.push({ label: 'Class desk', unitId: '' })
+  }
+
+  for (const unit of ws.units) {
+    if (loc === `unit:${unit.id}`) continue
+    targets.push({ label: unit.name, unitId: unit.id })
+  }
+
+  return targets
+}
+
+export function moveNote(ws: Workspace, noteId: string, unitId: string): Workspace {
+  return {
+    ...ws,
+    notes: ws.notes.map((n) =>
+      n.id === noteId
+        ? { ...n, unitId, taskId: '', testId: '' }
+        : n,
+    ),
+  }
+}
+
 export function blankTask(partial: Pick<TaskItem, 'id' | 'title'> & Partial<TaskItem>): TaskItem {
   const { tag, ...rest } = partial
   return {

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { classes } from '../data/school'
 import { useWorkspace } from '../lib/useWorkspace'
-import { buildMoveTargets, moveDoc, type NoteItem } from '../lib/workspace'
+import { buildMoveTargets, buildNoteMoveTargets, moveDoc, moveNote, type NoteItem } from '../lib/workspace'
 import EmojiPick from '../components/EmojiPick'
 import DateField from '../components/DateField'
 import NoteEditor from '../components/NoteEditor'
@@ -38,6 +38,7 @@ export default function NotePage() {
   }
 
   const current = note
+  const noteMoveTargets = buildNoteMoveTargets(ws, current)
 
   function patch(next: Partial<NoteItem>) {
     update({
@@ -115,6 +116,35 @@ export default function NotePage() {
             placeholder="Lecture, lab, chapter…"
           />
         </label>
+        {noteMoveTargets.length > 0 && (
+          <label className="field">
+            <span className="meta">Unit</span>
+            <select
+              className="note-box field-control"
+              value=""
+              onChange={(e) => {
+                const target = noteMoveTargets.find((t) => t.unitId === e.target.value)
+                if (!target) return
+                update(moveNote(ws, current.id, target.unitId))
+                if (target.unitId) nav(`/class/${id}/unit/${target.unitId}/note/${current.id}`)
+                else nav(`/class/${id}/note/${current.id}`)
+              }}
+            >
+              <option value="" disabled>
+                {current.unitId
+                  ? ws.units.find((u) => u.id === current.unitId)?.name ?? 'In a unit'
+                  : current.taskId || current.testId
+                    ? 'Attached to assignment or test'
+                    : 'Class desk'}
+              </option>
+              {noteMoveTargets.map((target) => (
+                <option key={target.unitId || 'class'} value={target.unitId}>
+                  Move to {target.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <div className="field">
           <span className="meta">Notes</span>
           <NoteEditor key={current.id} html={current.body} onChange={(body) => patch({ body })} />
