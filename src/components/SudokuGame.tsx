@@ -100,34 +100,23 @@ export default function SudokuGame({ emoji = false, title }: Props) {
       </div>
 
       <div className="sudoku-grid" role="grid" aria-label={title ?? (emoji ? 'Emoji sudoku' : 'Sudoku')}>
-        {Array.from({ length: 3 }, (_, boxR) =>
-          Array.from({ length: 3 }, (_, boxC) => {
-            const br = boxR * 3
-            const bc = boxC * 3
+        {state.grid.map((row, r) =>
+          row.map((value, c) => {
+            const isFixed = state.fixed[r][c]
+            const isSelected = selected?.r === r && selected?.c === c
+            const isError = checked && errors.has(cellKey(r, c))
+            const boxEdge =
+              (c === 2 || c === 5 ? ' box-right' : '') + (r === 2 || r === 5 ? ' box-bottom' : '')
             return (
-              <div key={`${br}-${bc}`} className="sudoku-box">
-                {Array.from({ length: 3 }, (_, r) =>
-                  Array.from({ length: 3 }, (_, c) => {
-                    const row = br + r
-                    const col = bc + c
-                    const value = state.grid[row][col]
-                    const isFixed = state.fixed[row][col]
-                    const isSelected = selected?.r === row && selected?.c === col
-                    const isError = checked && errors.has(cellKey(row, col))
-                    return (
-                      <button
-                        key={cellKey(row, col)}
-                        type="button"
-                        className={`sudoku-cell${isFixed ? ' is-fixed' : ''}${isSelected ? ' is-selected' : ''}${isError ? ' is-error' : ''}`}
-                        onClick={() => setSelected({ r: row, c: col })}
-                        aria-label={`Row ${row + 1} column ${col + 1}${value ? ` ${value}` : ' empty'}`}
-                      >
-                        {formatSudokuDigit(value, emoji)}
-                      </button>
-                    )
-                  }),
-                )}
-              </div>
+              <button
+                key={cellKey(r, c)}
+                type="button"
+                className={`sudoku-cell${boxEdge}${isFixed ? ' is-fixed' : ''}${isSelected ? ' is-selected' : ''}${isError ? ' is-error' : ''}`}
+                onClick={() => setSelected({ r, c })}
+                aria-label={`Row ${r + 1} column ${c + 1}${value ? ` ${value}` : ' empty'}`}
+              >
+                {formatSudokuDigit(value, emoji)}
+              </button>
             )
           }),
         )}
