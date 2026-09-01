@@ -11,6 +11,7 @@ import Studio from './pages/Studio'
 import PracticePage from './pages/PracticePage'
 import CheckInPage from './pages/CheckInPage'
 import HomeworkPage from './pages/HomeworkPage'
+import GamePage from './pages/GamePage'
 import { classes } from './data/school'
 import AccountBar from './components/AccountBar'
 import DeskPet from './components/DeskPet'
@@ -58,6 +59,7 @@ export default function App() {
           <NavLink to="/calendar">Calendar</NavLink>
           <NavLink to="/check-in">Check-in</NavLink>
           <NavLink to="/homework">Work</NavLink>
+          <NavLink to="/games">Games</NavLink>
           <NavLink to="/studio">Whimsy lab</NavLink>
           <div className="nav-label">Classes</div>
           {classes.map((c) => (
@@ -82,6 +84,7 @@ export default function App() {
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/check-in" element={<CheckInPage />} />
           <Route path="/homework" element={<HomeworkPage />} />
+          <Route path="/games" element={<GamePage />} />
           <Route path="/studio" element={<Studio />} />
           <Route path="/practice/:id/:setId" element={<PracticePage />} />
           <Route path="/practice/:id" element={<PracticePage />} />
