@@ -1362,6 +1362,92 @@ table.tt td.now-hit {
   background: #f4faf0;
 }
 
+.sudoku-game {
+  margin-top: 14px;
+}
+
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 360px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--ink);
+  gap: 1px;
+}
+
+.sudoku-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.sudoku-cell {
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  background: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sudoku-cell.is-fixed {
+  background: #f2f2f7;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.sudoku-cell.is-selected {
+  background: rgba(0, 122, 255, 0.12);
+  outline: 2px solid rgba(0, 122, 255, 0.45);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.sudoku-cell.is-error {
+  background: #fff7f7;
+  color: var(--red);
+}
+
+.sudoku-keypad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  max-width: 360px;
+}
+
+.sudoku-key {
+  min-width: 42px;
+  padding: 8px 10px;
+  font-size: 16px;
+}
+
+.sudoku-key-clear {
+  font-size: 13px;
+}
+
+.sudoku-game-emoji .sudoku-cell {
+  font-size: 22px;
+}
+
+.sudoku-game-emoji .sudoku-key {
+  font-size: 20px;
+  min-width: 44px;
+}
+
+.sudoku-emoji-key {
+  line-height: 1.5;
+}
+
 .coming-list {
   display: flex;
   flex-direction: column;
