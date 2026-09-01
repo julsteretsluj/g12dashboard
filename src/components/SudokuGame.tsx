@@ -39,7 +39,22 @@ export default function SudokuGame({ emoji = false, title }: Props) {
   const errors = useMemo(() => sudokuErrors(state.grid), [state.grid])
   const won = sudokuSolved(state.grid, state.solution)
   const filled = state.grid.flat().filter((v) => v > 0).length
-  const full = filled === 81
+
+  const digitCounts = useMemo(() => {
+    const counts = Array(10).fill(0) as number[]
+    for (const row of state.grid) {
+      for (const v of row) {
+        if (v > 0) counts[v]++
+      }
+    }
+    return counts
+  }, [state.grid])
+
+  function canPlaceDigit(digit: number, r: number, c: number) {
+    if (digit <= 0) return true
+    if (state.grid[r][c] === digit) return true
+    return digitCounts[digit] < 9
+  }
 
   const reset = useCallback((nextLevel: SudokuLevel = level, puzzleIndex?: number) => {
     setState(buildState(nextLevel, puzzleIndex))
@@ -54,7 +69,7 @@ export default function SudokuGame({ emoji = false, title }: Props) {
 
   function setCell(r: number, c: number, value: number) {
     if (state.fixed[r][c]) return
-    if (full && value > 0) return
+    if (value > 0 && !canPlaceDigit(value, r, c)) return
     setState((prev) => {
       const grid = cloneGrid(prev.grid)
       grid[r][c] = value
@@ -126,17 +141,20 @@ export default function SudokuGame({ emoji = false, title }: Props) {
 
       {selected && !state.fixed[selected.r][selected.c] && (
         <div className="sudoku-keypad" role="toolbar" aria-label="Enter digit">
-          {Array.from({ length: 9 }, (_, i) => i + 1).map((digit) => (
+          {Array.from({ length: 9 }, (_, i) => i + 1).map((digit) => {
+            const blocked = !canPlaceDigit(digit, selected.r, selected.c)
+            return (
             <button
               key={digit}
               type="button"
-              className={`btn ghost sudoku-key${full ? ' is-blocked' : ''}`}
-              disabled={full}
+              className={`btn ghost sudoku-key${blocked ? ' is-blocked' : ''}`}
+              disabled={blocked}
               onClick={() => setCell(selected.r, selected.c, digit)}
             >
               {formatSudokuDigit(digit, emoji)}
             </button>
-          ))}
+            )
+          })}
           <button
             type="button"
             className="btn ghost sudoku-key sudoku-key-clear"
