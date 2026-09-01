@@ -1,6 +1,31 @@
 import { useCallback, useEffect, useState } from 'react'
 
-const deck = ['🧬', '🗺️', '🛠️', '🎨', '🐻', '🍁', '📚', '✏️'] as const
+const emojiPool = [
+  '🧬',
+  '🗺️',
+  '🛠️',
+  '🎨',
+  '🐻',
+  '🍁',
+  '📚',
+  '✏️',
+  '🧪',
+  '📝',
+  '🎯',
+  '⏰',
+] as const
+
+export type MemoryLevel = 'easy' | 'medium' | 'hard' | 'expert'
+
+const levels: Record<
+  MemoryLevel,
+  { label: string; pairs: number; cols: number; blurb: string }
+> = {
+  easy: { label: 'Easy', pairs: 4, cols: 4, blurb: '4 pairs · 2×4 grid' },
+  medium: { label: 'Medium', pairs: 6, cols: 4, blurb: '6 pairs · 3×4 grid' },
+  hard: { label: 'Hard', pairs: 8, cols: 4, blurb: '8 pairs · 4×4 grid' },
+  expert: { label: 'Expert', pairs: 10, cols: 5, blurb: '10 pairs · 4×5 grid' },
+}
 
 type Card = {
   id: string
@@ -9,14 +34,16 @@ type Card = {
   matched: boolean
 }
 
-function buildDeck(): Card[] {
-  const pairs = [...deck, ...deck]
-  for (let i = pairs.length - 1; i > 0; i--) {
+function buildDeck(level: MemoryLevel): Card[] {
+  const { pairs } = levels[level]
+  const picked = emojiPool.slice(0, pairs)
+  const deck = [...picked, ...picked]
+  for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[pairs[i], pairs[j]] = [pairs[j], pairs[i]]
+    ;[deck[i], deck[j]] = [deck[j], deck[i]]
   }
-  return pairs.map((emoji, i) => ({
-    id: `${i}-${emoji}`,
+  return deck.map((emoji, i) => ({
+    id: `${level}-${i}-${emoji}`,
     emoji,
     flipped: false,
     matched: false,
@@ -24,20 +51,27 @@ function buildDeck(): Card[] {
 }
 
 export default function MemoryGame() {
-  const [cards, setCards] = useState<Card[]>(() => buildDeck())
+  const [level, setLevel] = useState<MemoryLevel>('medium')
+  const [cards, setCards] = useState<Card[]>(() => buildDeck('medium'))
   const [moves, setMoves] = useState(0)
   const [locked, setLocked] = useState(false)
   const [won, setWon] = useState(false)
 
+  const config = levels[level]
   const matched = cards.filter((c) => c.matched).length / 2
-  const total = deck.length
+  const total = config.pairs
 
-  const reset = useCallback(() => {
-    setCards(buildDeck())
+  const reset = useCallback((nextLevel: MemoryLevel = level) => {
+    setCards(buildDeck(nextLevel))
     setMoves(0)
     setLocked(false)
     setWon(false)
-  }, [])
+  }, [level])
+
+  function pickLevel(next: MemoryLevel) {
+    setLevel(next)
+    reset(next)
+  }
 
   useEffect(() => {
     if (matched === total && moves > 0) setWon(true)
@@ -80,18 +114,38 @@ export default function MemoryGame() {
 
   return (
     <div className="memory-game">
+      <div className="memory-levels" role="tablist" aria-label="Difficulty">
+        {(Object.keys(levels) as MemoryLevel[]).map((id) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={level === id}
+            className={`btn ghost memory-level${level === id ? ' is-active' : ''}`}
+            onClick={() => pickLevel(id)}
+          >
+            {levels[id].label}
+          </button>
+        ))}
+      </div>
+      <p className="meta memory-level-hint">{config.blurb}</p>
+
       <div className="memory-head">
         <p className="meta" style={{ margin: 0 }}>
           {won
-            ? `Matched in ${moves} moves — nice.`
+            ? `${config.label} cleared in ${moves} moves — nice.`
             : `${matched} / ${total} pairs · ${moves} moves`}
         </p>
-        <button className="btn ghost" type="button" onClick={reset}>
+        <button className="btn ghost" type="button" onClick={() => reset()}>
           New game
         </button>
       </div>
 
-      <div className="memory-grid" role="grid" aria-label="Memory card grid">
+      <div
+        className={`memory-grid memory-grid-cols-${config.cols}`}
+        role="grid"
+        aria-label={`Memory card grid, ${config.label}`}
+      >
         {cards.map((card) => (
           <button
             key={card.id}

@@ -12,7 +12,7 @@ export default function GamePage() {
       <section className="card" style={{ marginTop: 20 }}>
         <h3>Emoji memory</h3>
         <p className="meta" style={{ marginTop: 0 }}>
-          Eight pairs from your desk — Bio, Social, CTS, Art, Homeroom, and a few extras.
+          Pick a level — more pairs on Expert. Match emojis from your desk and a few extras.
         </p>
         <MemoryGame />
       </section>

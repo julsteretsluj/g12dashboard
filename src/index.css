@@ -1250,6 +1250,27 @@ table.tt td.now-hit {
   margin-top: 14px;
 }
 
+.memory-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.memory-level {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.memory-level.is-active {
+  background: rgba(0, 122, 255, 0.14);
+  color: #007aff;
+  border-color: rgba(0, 122, 255, 0.35);
+}
+
+.memory-level-hint {
+  margin: 10px 0 0;
+}
+
 .memory-head {
   display: flex;
   flex-wrap: wrap;
@@ -1257,13 +1278,30 @@ table.tt td.now-hit {
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 14px;
+  margin-top: 12px;
 }
 
 .memory-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+}
+
+.memory-grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   max-width: 420px;
+}
+
+.memory-grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  max-width: 500px;
+}
+
+.memory-grid-cols-5 .memory-card-front {
+  font-size: 28px;
+}
+
+.memory-grid-cols-5 .memory-card-back {
+  font-size: 18px;
 }
 
 .memory-card {
