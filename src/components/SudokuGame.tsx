@@ -39,6 +39,7 @@ export default function SudokuGame({ emoji = false, title }: Props) {
   const errors = useMemo(() => sudokuErrors(state.grid), [state.grid])
   const won = sudokuSolved(state.grid, state.solution)
   const filled = state.grid.flat().filter((v) => v > 0).length
+  const full = filled === 81
 
   const reset = useCallback((nextLevel: SudokuLevel = level, puzzleIndex?: number) => {
     setState(buildState(nextLevel, puzzleIndex))
@@ -53,6 +54,7 @@ export default function SudokuGame({ emoji = false, title }: Props) {
 
   function setCell(r: number, c: number, value: number) {
     if (state.fixed[r][c]) return
+    if (full && value > 0) return
     setState((prev) => {
       const grid = cloneGrid(prev.grid)
       grid[r][c] = value
@@ -128,7 +130,8 @@ export default function SudokuGame({ emoji = false, title }: Props) {
             <button
               key={digit}
               type="button"
-              className="btn ghost sudoku-key"
+              className={`btn ghost sudoku-key${full ? ' is-blocked' : ''}`}
+              disabled={full}
               onClick={() => setCell(selected.r, selected.c, digit)}
             >
               {formatSudokuDigit(digit, emoji)}

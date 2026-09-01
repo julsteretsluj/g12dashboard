@@ -1467,6 +1467,13 @@ table.tt td.now-hit {
   font-size: 13px;
 }
 
+.sudoku-key.is-blocked,
+.sudoku-key:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
 .sudoku-game-emoji .sudoku-cell {
   font-size: clamp(16px, 4vw, 22px);
 }
