@@ -1397,6 +1397,12 @@ table.tt td.now-hit {
   align-items: center;
   justify-content: center;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sudoku-cell:focus,
+.sudoku-cell:focus-visible {
+  outline: none;
 }
 
 .sudoku-cell.is-fixed {
@@ -1406,10 +1412,14 @@ table.tt td.now-hit {
 }
 
 .sudoku-cell.is-selected {
-  background: rgba(0, 122, 255, 0.12);
-  outline: 2px solid rgba(0, 122, 255, 0.45);
+  outline: 2px solid var(--red);
   outline-offset: -2px;
   z-index: 1;
+}
+
+.sudoku-cell.is-selected:not(.is-fixed) {
+  background: var(--red-soft);
+  color: var(--red);
 }
 
 .sudoku-cell.is-error {
