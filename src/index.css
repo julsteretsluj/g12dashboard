@@ -1487,6 +1487,91 @@ table.tt td.now-hit {
   line-height: 1.5;
 }
 
+.merge-game {
+  margin-top: 14px;
+}
+
+.merge-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 4px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f2f2f7;
+  border: 1px solid var(--line);
+}
+
+.merge-chain-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+  line-height: 1;
+  opacity: 0.35;
+}
+
+.merge-chain-item.is-unlocked {
+  opacity: 1;
+}
+
+.merge-chain-arrow {
+  font-size: 14px;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.merge-hint {
+  margin: 0 0 12px;
+}
+
+.merge-board {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.merge-cell {
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-size: clamp(22px, 5vw, 30px);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.merge-cell.is-empty {
+  background: #fafafa;
+  box-shadow: none;
+  cursor: default;
+}
+
+.merge-cell.is-selected {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+  background: var(--red-soft);
+  z-index: 1;
+}
+
+.merge-cell.is-flash {
+  transform: scale(1.08);
+  border-color: rgba(92, 158, 61, 0.55);
+  background: #f4faf0;
+}
+
+.merge-cell:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .coming-list {
   display: flex;
   flex-direction: column;
