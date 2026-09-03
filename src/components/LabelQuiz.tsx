@@ -62,7 +62,7 @@ export default function LabelQuiz({
             className="btn"
             type="button"
             onClick={() => setChecked(true)}
-            disabled={filled < labels.length}
+            disabled={filled === 0}
           >
             Check
           </button>
