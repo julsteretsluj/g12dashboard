@@ -14,8 +14,8 @@ export default function GamePage() {
       <section className="card" style={{ marginTop: 20 }}>
         <h3>Emoji merge</h3>
         <p className="meta" style={{ marginTop: 0 }}>
-          Gossip Harbor–style: tap two of the same emoji to fuse the next one up the chain. Drop
-          items when you need more pieces.
+          Branching paths (Study/Lab both make 🎒; Art/Map both make 🍁). Fill tasks like 25
+          pencils or 1 crown — craft, drop, or tap a task to deliver from the board.
         </p>
         <MergeGame />
       </section>

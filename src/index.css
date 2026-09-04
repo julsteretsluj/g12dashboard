@@ -1491,6 +1491,33 @@ table.tt td.now-hit {
   margin-top: 14px;
 }
 
+.merge-paths {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f2f2f7;
+  border: 1px solid var(--line);
+}
+
+.merge-path-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.merge-path-label {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.merge-path-note {
+  white-space: nowrap;
+}
+
 .merge-chain {
   display: flex;
   flex-wrap: wrap;
@@ -1503,11 +1530,18 @@ table.tt td.now-hit {
   border: 1px solid var(--line);
 }
 
+.merge-chain-inline {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
 .merge-chain-item {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1;
   opacity: 0.35;
 }
@@ -1520,6 +1554,69 @@ table.tt td.now-hit {
   font-size: 14px;
   color: var(--muted);
   opacity: 0.8;
+}
+
+.merge-tasks {
+  margin-bottom: 14px;
+}
+
+.merge-task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.merge-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.merge-task.is-ready {
+  border-color: rgba(192, 41, 45, 0.4);
+  background: var(--red-soft);
+}
+
+.merge-task-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.merge-task-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.merge-task-body strong {
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+
+.merge-task-bar {
+  display: block;
+  height: 4px;
+  margin-top: 4px;
+  border-radius: 980px;
+  background: rgba(60, 60, 67, 0.12);
+  overflow: hidden;
+}
+
+.merge-task-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--red);
+  border-radius: 980px;
 }
 
 .merge-hint {
